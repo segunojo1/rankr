@@ -1,0 +1,19 @@
+import Link from 'next/link'
+import React from 'react'
+
+const Welcome = () => {
+    return (
+        <div>
+            <div className='flex flex-col items-center mt-[106px] instrument-sans'>
+                <h1 className='tracking-[-3.2px] leading-normal text-[80px] font-medium text-[#0A0A0A] mb-[105px]'><span className=' text-[#737373] '>Welcome to</span> <span className=''>Rankr,</span> <span className='instrument-serif italic'>Segun!</span></h1>
+                <Link href='/rank' className='py-3 text-base font-medium rounded-[5px] bg-[#1F92FF] text-white w-[341px] flex items-center justify-center mb-6'>Create Your First Rank</Link>
+                <Link href='/link' className='py-3 text-base font-medium rounded-[5px] bg-[#001526] text-white w-[341px] flex items-center justify-center'>Start Voting</Link>
+                <div className=' h-[1px] bg-[#D4D4D4] mt-[20px] mb-[10px] w-[341px]'></div>
+                <Link href='/link' className='py-3 text-base font-medium rounded-[5px] bg-[#fff] border-[#000000] border text-black w-[341px] hover:bg-black hover:text-white transition-all flex items-center justify-center'>Check the Leaderboard</Link>
+
+            </div>
+        </div>
+    )
+}
+
+export default Welcome
