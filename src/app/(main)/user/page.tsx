@@ -30,7 +30,6 @@ export default function UserDetailsOnboard() {
       <div className={`flex lg:flex-row flex-col gap-[59px] w-full min-h-screen p-10 lg:px-32 px-[27px] lg:pt-[161px] pt-[100px] instrument-sans`}>
         <aside className='lg:fixed lg:w-1/3 lg:h-screen flex lg:items-start items-center justify-center lg:justify-start text-center lg:text-start'>
           <h1 className='lg:text-[80px] text-[60px] font-medium max-w-[395px] lg:tracking-[-3.2px] tracking-[-2.4px] leading-normal'>
-
             <>
               Wanna get
               <br />

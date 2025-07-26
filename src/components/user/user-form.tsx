@@ -24,11 +24,20 @@ export default function UserForm() {
 
     try {
       const rankrService = RankrService.getInstance();
-      await rankrService.signup({
+      const response = await rankrService.signup({
         username,
         email: email || undefined,
         user_image: profileImage || undefined
       });
+      
+      // Store user data in localStorage
+      if (response && response.token) {
+        localStorage.setItem('user', JSON.stringify({
+          token: response.token,
+          username: username,
+          timestamp: new Date().toISOString()
+        }));
+      }
       
       router.push('/welcome');
     } catch (err) {
