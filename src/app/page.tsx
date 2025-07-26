@@ -15,7 +15,7 @@ export default function Home() {
           className="w-[70px] h-[70px]"
         />
         <Link href="/user" className="bg-[#001526] text-white py-3 px-[30px] rounded-[5px] md:flex hidden items-center justify-center text-[16px] font-medium tracking-[-0.64px] w-fit">Start Ranking</Link>
-        <Link href="/team" className="text-[16px] font-medium tracking-[-0.64px] flex items-center text-[#001526]">Meet the devs <ArrowRight width={20} /></Link>
+        <Link href="/team" className="text-[16px] font-medium tracking-[-0.64px] flex items-center text-[#001526]">Meet the team <ArrowRight width={20} /></Link>
       </nav>
 
       <div className="flex flex-col px-2 gap-[30px] mx-auto max-w-[1220px] items-center w-full">
