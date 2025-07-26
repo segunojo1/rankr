@@ -16,11 +16,13 @@ const Leaderboard = () => {
     const { currentRank, isLoading, error, fetchRank } = useRankStore();
     // const id = params.id;
 const {id} = useParams();
+const rankId = Array.isArray(id) ? id[0] : id || '';
+
     useEffect(() => {
-        if (id) {
-            fetchRank(id);
+        if (rankId) {
+            fetchRank(rankId);
         }
-    }, [id, fetchRank]);
+    }, [rankId, fetchRank]);
 
     if (isLoading) {
         return (
@@ -53,15 +55,15 @@ const {id} = useParams();
     const totalVotes = currentRank.person1Votecount + currentRank.person2Votecount;
     
     // Get the voted person's name from localStorage
-    const voteKey = `rank_${id}_vote`;
+    const voteKey = `rank_${rankId}_vote`;
     const voteData = typeof window !== 'undefined' ? localStorage.getItem(voteKey) : null;
     const votedPersonName = voteData ? JSON.parse(voteData).personName : 'your choice';
     
     const winnerName = currentRank.person1Votecount > currentRank.person2Votecount 
         ? currentRank.person_one_name 
         : currentRank.person_two_name;
-    const winnerVotes = Math.max(currentRank.person1Votecount, currentRank.person2Votecount);
-    const loserVotes = Math.min(currentRank.person1Votecount, currentRank.person2Votecount);
+    // const winnerVotes = Math.max(currentRank.person1Votecount, currentRank.person2Votecount);
+    // const loserVotes = Math.min(currentRank.person1Votecount, currentRank.person2Votecount);
 
     return (
         <div className='flex flex-col items-center py-[100px] px-6'>

@@ -1,26 +1,16 @@
+'use client'
+
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import { TeamMemberCard } from '@/components/team/TeamMemberCard';
 
-interface TeamMemberProps {
-    name: string;
-    role: string;
-    description: string;
-    borderColor: string;
-    barColor: string;
-    image: string;
-    isWinner?: boolean;
-    isOddIndex?: boolean;
-}
-
-const Team = () => {
-    const teamMembers: TeamMemberProps[] = [
+export default function Team() {
+    const teamMembers = [
         {
             name: 'Sherrif',
             role: 'Backend Developer',
             description: 'Lives in terminal windows, speaks fluent database.',
-            borderColor: '#ff3d00', // red
+            borderColor: '#ff3d00',
             barColor: '#ff3d00',
             image: '/assets/team/sherrif.png',
             isWinner: true
@@ -29,7 +19,7 @@ const Team = () => {
             name: 'Seyi',
             role: 'Product Designer',
             description: 'Every swipe and scroll in Rankr has his fingerprint on it.',
-            borderColor: '#0a0a0a', // Red
+            borderColor: '#0a0a0a',
             barColor: '#0a0a0a',
             image: '/assets/team/seyi.png'
         },
@@ -37,15 +27,15 @@ const Team = () => {
             name: 'Joe',
             role: 'Product Designer',
             description: 'Quietly running the interface while making you feel every pixel.',
-            borderColor: '#1F92FF', 
+            borderColor: '#1F92FF',
             barColor: '#1F92FF',
             image: '/assets/team/joe.png'
         },
         {
             name: 'Segun',
             role: 'Frontend Developer',
-            description: 'If you’ve ever tapped something and said “damn,” they probably built it.',
-            borderColor: '#F2C761', // Yellow
+            description: 'If you\'ve ever tapped something and said "damn," they probably built it.',
+            borderColor: '#F2C761',
             barColor: '#F2C761',
             image: '/assets/team/segun.png'
         }
@@ -53,13 +43,13 @@ const Team = () => {
 
     return (
         <div className='max-w-6xl mx-auto px-4 pb-4'>
-            <Link href="/" className='z-[999] relative mx-auto w-[160px] flex mt-[30px] '>
+            <Link href="/" className='z-[999] relative mx-auto w-[160px] flex mt-[30px]'>
                 <Button className='w-[160px] h-[44px] bg-[#001526] text-white rounded-[5px] flex items-center justify-center mb-8'>
                     Back Home
                 </Button>
             </Link>
 
-            <h1 className='text-5xl md:text-7xl  instrument-sans font-medium text-center text-gray-500 -tracking-wider mb-4'>
+            <h1 className='text-5xl md:text-7xl instrument-sans font-medium text-center text-gray-500 -tracking-wider mb-4'>
                 <span className='instrument-serif italic text-[#001526]'>Rankr</span> was not an Accident.
             </h1>
 
@@ -67,7 +57,7 @@ const Team = () => {
                 Ranked Ourselves First (<span className='instrument-serif italic text-[#001526]'>Sorry</span>).
             </p>
 
-            <div className='flex flex-col md:flex-row md:flex-wrap items-center gap-4 md:gap-20 max-w-[393px] md:max-w-full md:w-full justify-center mx-auto '>
+            <div className='flex flex-col md:flex-row md:flex-wrap items-center gap-4 md:gap-20 max-w-[393px] md:max-w-full md:w-full justify-center mx-auto'>
                 {teamMembers.map((member, index) => (
                     <div key={index} className={`w-full md:w-fit flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
                         <TeamMemberCard {...member} isOddIndex={index % 2 === 1} />
@@ -76,97 +66,5 @@ const Team = () => {
             </div>
         </div>
     );
-};
 
-export default Team;
-
-export const TeamMemberCard: React.FC<TeamMemberProps> = ({
-    name,
-    role,
-    description,
-    borderColor,
-    barColor,
-    image,
-    isWinner = true,
-    isOddIndex = false
-}) => {
-    const bioContent = (
-        <div className='md:w-[190px] w-[71px]'>
-            <div className='flex items-center md:gap-3 gap-1 p-2'>
-                {isWinner && (
-                    <Image
-                        src='/assets/winner.svg'
-                        alt='winner'
-                        width={36}
-                        height={36}
-                        className='w-[13px] h-[13px] md:w-9 md:h-9'
-                    />
-                )}
-                <p className='instrument-serif italic font-normal text-[#001526] text-[10px] md:text-3xl md:-tracking-wide -tracking-[0.42px]'>
-                    {name}
-                </p>
-            </div>
-
-            <div className='w-full md:max-w-[240px] max-w-[66px] md:h-9 h-[13px] md:mb-[25px] mb-[10px] flex items-center px-[2px] border-1 md:rounded-[9px] rounded-[4px] overflow-hidden'
-                style={{ borderColor: barColor }}
-            >
-                <div
-                    className='md:h-8 h-[9px] md:rounded-[9px] rounded-[4px] transition-all duration-500'
-                    style={{
-                        width: `${Math.floor(Math.random() * 60) + 40}%`,
-                        backgroundColor: barColor,
-                    }}
-                />
-            </div>
-
-            <div className='flex flex-col md:gap-2 gap-[3px]'>
-                <h2 className='text-[7.5px] md:text-xl font-medium text-[#737373] md:-tracking-wide -tracking-[0.3px] instrument-sans'>
-                    {role}
-                </h2>
-                <p className='text-[5px] md:text-base font-normal text-[#737373] md:-tracking-wide -tracking-[0.2px] instrument-sans leading-relaxed'>
-                    {description}
-                </p>
-            </div>
-        </div>
-    );
-
-    const imageContent = (
-        <div
-            className='md:p-2.5 p-1 bg-white rounded-xl transition-all duration-300 flex-shrink-0 w-full md:max-w-[240px] max-w-[104px] mx-auto md:mx-0'
-            style={{ border: `4.5px solid ${borderColor}` }}
-        >
-            <div className='relative group cursor-pointer'>
-                <Image
-                    src="/assets/pic-tag.png"
-                    alt="pic-tag"
-                    width={15}
-                    height={36}
-                    className='md:w-3.5 w-[6px] md:h-8 h-[15px] absolute left-[13.4px] -top-[18px]'
-                />
-                <Image
-                    src={image}
-                    alt={name}
-                    width={247}
-                    height={267}
-                    className='md:w-full w-[104px] md:h-auto h-[122px] md:aspect-[247/267]  object-cover rounded-md'
-                />
-            </div>
-        </div>
-    );
-
-    return (
-        <div className='flex  w-fit md:flex-row items-start gap-5'>
-            {isOddIndex ? (
-                <>
-                    {imageContent}
-                    {bioContent}
-                </>
-            ) : (
-                <>
-                    {bioContent}
-                    {imageContent}
-                </>
-            )}
-        </div>
-    );
 };

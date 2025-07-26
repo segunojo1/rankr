@@ -456,7 +456,8 @@ const Step4 = () => {
       router.push(`/rank/${response.rankr.id}`);
     } catch (error) {
       console.error('Error launching ranking:', error);
-      toast(error.message || 'Failed to launch ranking. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to launch ranking. Please try again.';
+      toast(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

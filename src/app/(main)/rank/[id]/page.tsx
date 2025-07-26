@@ -2,10 +2,10 @@
 
 import { RankrService } from '@/services/rankr.service';
 import { HeartIcon } from 'lucide-react';
+import { AxiosError } from 'axios';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { useRankStore } from '@/store/rank.store';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
@@ -37,7 +37,8 @@ const Rank = () => {
 
     // const rankId = params.id;
 const {id} = useParams()
-    // Map rank data to options for the UI
+const rankId = Array.isArray(id) ? id[0] : id || '';
+
     const options = React.useMemo(() => {
         if (!currentRank) return [];
         return [
@@ -72,10 +73,10 @@ const {id} = useParams()
         // Add event listener for window resize
         window.addEventListener('resize', updateWindowSize);
 
-        if (!id) return;
+        if (!rankId) return;
 
         // Check for existing vote
-        const voteKey = `rank_${id}_vote`;
+        const voteKey = `rank_${rankId}_vote`;
         const voteData = localStorage.getItem(voteKey);
 
         if (voteData) {
@@ -87,7 +88,7 @@ const {id} = useParams()
         }
 
         // Fetch rank data
-        fetchRank(id);
+        fetchRank(rankId);
 
         // Cleanup function
         return () => {
@@ -110,10 +111,9 @@ const {id} = useParams()
             // Hide confetti after animation
             setTimeout(() => {
                 setShowConfetti(false);
-            }, 5000); // 5 seconds of confetti
+            }, 5000);
 
-            // Save to localStorage with rank-specific key
-            const voteKey = `rank_${id}_vote`;
+            const voteKey = `rank_${rankId}_vote`;
             localStorage.setItem(voteKey, JSON.stringify({
                 hasVoted: true,
                 optionId: optionId,
@@ -123,15 +123,17 @@ const {id} = useParams()
 
             const rankrService = RankrService.getInstance();
             try {
-                await rankrService.vote(id, optionId);
+                await rankrService.vote(rankId, optionId);
                 
-            } catch (error) {
-                toast(error?.response?.data?.error);
-                
+            } catch (error: unknown) {
+                if (error && typeof error === 'object' && 'response' in error) {
+                    const axiosError = error as AxiosError<{ error?: string }>;
+                    const errorMessage = axiosError.response?.data?.error || 'Failed to submit vote. Please try again.';
+                    toast(errorMessage);
+                } else {
+                    toast('An unexpected error occurred');
+                }
             }
-
-            // // Refresh rank data to get updated vote counts
-            // await fetchRank(id);
 
         } catch (error) {
             console.error('Error submitting vote:', error);
