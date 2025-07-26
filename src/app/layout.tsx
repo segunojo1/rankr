@@ -28,10 +28,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="lg:pl-[68px] pl-5 pr-5 pt-[30px] flex justify-between fixed min-w-full items-center">
-            <Image src="/assets/logo.png" width={50} height={50} alt="" />
-            <ThemeSwitcher />
-          </nav>
 
           {children}
         </ThemeProvider>

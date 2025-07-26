@@ -40,7 +40,7 @@ export default function UserForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className='w-full space-y-6'>
+    <form onSubmit={handleSubmit} className='w-full space-y-6 max-w-[500px]'>
       <div className='space-y-2'>
         <Label htmlFor='username' className='font-medium text-[16px] instrument-sans tracking-[-0.64px]'>
           What should we call you?
