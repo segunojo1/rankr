@@ -5,52 +5,56 @@ import React from 'react'
 
 const Leaderboard = () => {
     return (
-        <div className='flex flex-col items-center'>
-            <h1 className='text-[80px] instrument-sans font-medium text-center mb-8 text-gray-500'>
+        <div className='flex flex-col items-center py-[100px] px-6'>
+            <h1 className='lg:text-[80px] text-[50px] instrument-sans font-medium text-center mb-8 text-[#737373]'>
                 You voted <span className='instrument-serif italic text-[#001526]'>segun</span>!
             </h1>
-            <p className='text-[24px] font-normal instrument-sans p-[5px] rounded-[7px] bg-[#F0F0EF] w-fit'>Current Stats:</p>
+            <div className='p-[1.2px] border border-[#f0f0ef]'>
+                <p className='md:text-[24px] text-[14px] font-medium instrument-sans p-[5px] rounded-[7px] bg-[#F0F0EF] w-fit'>Current Stats:</p>
+            </div>
             <div className='flex flex-col items-start gap-6 mb-[100px] w-fit'>
-                <div className='flex items-center gap-6'>
+                <div className='flex items-center lg:gap-6 gap-5'>
                     <Image
                         src={'/assets/profile.png'}
                         alt='add your look'
                         width={61}
                         height={63}
+                        className='w-[38px] md:w-[61px]'
                     />
                     <div className='flex flex-col gap-[5px]'>
-                        <div className='flex p-[10px] gap-[10px]'>
+                        <div className='flex  items-center md:gap-[10px] gap-[6px]'>
                             <Image
                                 src={'/assets/winner.svg'}
                                 alt='winner'
                                 width={35}
                                 height={32}
                             />
-                            <p className='text-[28px] instrument-serif italic font-normal -leading-[1.12px]'>Theboygenius</p>
+                            <p className='md:text-[28px] text-[17px] instrument-serif italic font-normal md:-leading-[1.12px] -leading-[0.69px]'>Theboygenius</p>
                         </div>
-                        <div className='w-[178px] h-[36px] flex items-center px-[2px] border border-[#B48A47] rounded-[13px]'>
-                            <div className='w-[115px] h-[32px] bg-[#ECC25F] rounded-[13px]'></div>
+                        <div className='lg:w-[178px] w-[110px] lg:h-[36px] h-[22px] flex items-center px-[2px] border border-[#B48A47] lg:rounded-[13px] rounded-[5px]'>
+                            <div className='lg:w-[115px] w-[60px] lg:h-[32px] h-[18px] bg-[#ECC25F] lg:rounded-[13px] rounded-[5px]'></div>
                         </div>
                     </div>
-                    <p className='text-[28px] instrument-sans font-medium text-[#737373] p-[10px] self-end'><span className='text-[#001526] instrument-serif italic'>330</span>/400 votes</p>
+                    <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'><span className='text-[#001526] instrument-serif italic'>330</span>/400 votes</p>
                 </div>
 
 
-                <div className='flex items-center gap-6'>
+                <div className='flex items-center lg:gap-6 gap-5'>
                     <Image
                         src={'/assets/profile.png'}
                         alt='add your look'
                         width={61}
                         height={63}
+                        className='w-[38px] md:w-[61px]'
                     />
                     <div className='flex flex-col gap-[5px]'>
-                        <p className='text-[28px] instrument-serif italic font-normal -leading-[1.12px]'>Theboygenius</p>
+                        <p className='md:text-[28px] text-[17px] instrument-serif italic font-normal md:-leading-[1.12px] -leading-[0.69px]'>Theboygenius</p>
 
-                        <div className='w-[178px] h-[36px] flex items-center px-[2px] border border-[#B48A47] rounded-[13px]'>
-                            <div className='w-[115px] h-[32px] bg-[#ECC25F] rounded-[13px]'></div>
+                        <div className='lg:w-[178px] w-[110px] lg:h-[36px] h-[22px] flex items-center px-[2px] border border-[#a3a3a3] lg:rounded-[13px] rounded-[5px]'>
+                            <div className='lg:w-[115px] w-[60px] lg:h-[32px] h-[18px] bg-[#a3a3a3] lg:rounded-[13px] rounded-[5px]'></div>
                         </div>
                     </div>
-                    <p className='text-[28px] instrument-sans font-medium text-[#737373] p-[10px] self-end'><span className='text-[#001526] instrument-serif italic'>330</span>/400 votes</p>
+                    <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'><span className='text-[#001526] instrument-serif italic'>330</span>/400 votes</p>
                 </div>
             </div>
 

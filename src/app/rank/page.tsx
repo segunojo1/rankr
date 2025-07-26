@@ -50,7 +50,7 @@ const Step1 = () => {
 
   return (
     <div className="w-full ">
-      <h1 className='text-[80px] font-medium text-center mb-12 text-gray-500'>
+      <h1 className='lg:text-[80px] text-[55px] lg:tracking-[-3.2px] tracking-[-2.4px]  font-medium text-center mb-12 text-gray-500'>
         What do you want people to <span className='instrument-serif font-normal italic text-[#001526]'>rank</span>?
       </h1>
 
@@ -259,7 +259,7 @@ const Step2 = () => {
 
   return (
     <div className="w-full max-w-2xl flex flex-col items-center mx-auto">
-      <h1 className='text-[80px] instrument-sans font-medium text-center mb-[10px] text-gray-500'>
+      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-[10px] text-gray-500'>
         Add <span className='instrument-serif font-normal italic text-[#001526]'>Options</span>
       </h1>
 
@@ -335,13 +335,13 @@ const Step3 = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h1 className='text-[80px] instrument-sans font-medium text-center mb-8 text-gray-500'>
+      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-8 text-gray-500'>
         Choose <span className='instrument-serif italic text-[#001526]'>Voting</span> Style
       </h1>
 
       <div className=" gap-3 bg-white rounded-lg max-w-[340px] w-full flex flex-col items-center mx-auto">
         <div className="space-y-2 w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Visibility</label>
+          <label className="block text-sm font-medium text-[#191919] mb-1">Visibility</label>
           <Select
             value={formData.settings.isPublic ? 'public' : 'private'}
             onValueChange={(value) => handleVisibilityChange({ target: { value } } as any)}
@@ -362,7 +362,7 @@ const Step3 = () => {
         </div>
 
         <div className="space-y-2 w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Voting Duration</label>
+          <label className="block text-sm font-medium text-[#191919] mb-1">Voting Duration</label>
           <Select
             value={formData.settings.duration}
             onValueChange={(value) => handleDurationChange({ target: { value } } as any)}
@@ -433,11 +433,11 @@ const Step4 = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4">
-      <h1 className='text-[80px] instrument-sans font-medium text-center mb-6 text-[#737373]'>
-        Preview & <span className='instrument-serif italic text-[#001526]'>Launch</span>
+      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-6 text-[#737373]'>
+        Preview and <span className='instrument-serif italic text-[#001526]'>Launch</span>
       </h1>
       <div className='flex flex-col  w-full gap-[30px] items-center mx-auto'>
-        <div className='px-[50px] py-[26px] flex gap-[100px] shadow-sm w-fit rounded-[10px]'>
+        <div className='px-[50px] py-[26px] flex gap-[100px] shadow-sm w-fit rounded-[10px] text-[14px] font-medium tracking-[-0.56px]'>
           <div>
             <p>Name:</p>
             <p>No of Options:</p>
@@ -461,7 +461,7 @@ const Step4 = () => {
 
         {showOptions && (
           <div className="w-full mt-4 rounded-lg">
-            <div className="flex justify-center gap-[30px]">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-[30px]">
               {formData.options.map((option, index) => (
                 <div 
                   key={option.id} 
@@ -471,7 +471,7 @@ const Step4 = () => {
                   }`}
                 >
                   <div className="p-3">
-                    <p className="font-medium text-gray-900">{option.text}</p>
+                    <p className="font-semibold text-[22px] instrument-sans tracking-[-0.88px] text-[#001526]">{option.text}</p>
                   </div>
                   <div className='p-2 bg-white rounded-[13px] w-fit'>
                     {option.image ? (
@@ -652,7 +652,7 @@ const Rank = () => {
   ];
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-[100px] px-4">
       <div className="flex justify-center gap-12 max-w-6xl mx-auto">
 
 
@@ -704,8 +704,8 @@ const Rank = () => {
         </div> */}
 
         {/* Progress bar */}
-        <div className='fixed top-0 bottom-0 h-fit my-auto right-1/4 '>
-          <div className="relative hidden md:block max-h-[212px]">
+        <div className='fixed top-0 bottom-0 h-fit my-auto lg:right-1/4 right-2 '>
+          <div className="relative  max-h-[212px]">
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 -translate-x-1/2">
               <div
                 className="absolute left-0 w-full bg-[#001526] transition-all duration-300"
