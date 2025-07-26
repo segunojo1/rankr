@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ThemeProvider } from "@/components/theme-provider";
 import ThemeSwitcher from "@/components/ui/theme-switcher";
 import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Rankr",
@@ -35,7 +36,8 @@ export default function RootLayout({
           {children}
         </ThemeProvider>
         <NextTopLoader
-          color="#2299DD" />
+          color="#000000" />
+          <Toaster />
       </body>
     </html>
   );

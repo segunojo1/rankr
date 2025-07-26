@@ -26,6 +26,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { RankrService } from '@/services/rankr.service';
+import { toast } from 'sonner';
 
 const Step1 = () => {
   const form = useForm<z.infer<typeof RankInfoSchema>>({
@@ -110,21 +113,24 @@ const OptionInput = ({
   showAddMore,
   onAdd
 }: {
-  option: { id: string; text: string; image?: string };
-  onUpdate: (id: string, data: { text?: string; image?: string }) => void;
+  option: { id: string; text: string; image: File | null };
+  onUpdate: (id: string, data: { text?: string; image?: File | null }) => void;
   onRemove: (id: string) => void;
   showAddMore: boolean;
   onAdd: () => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      onUpdate(option.id, { image: file });
+
+      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
-        const imageUrl = reader.result as string;
-        onUpdate(option.id, { image: imageUrl });
+        setPreviewUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -160,7 +166,7 @@ const OptionInput = ({
           >
             {option.image ? (
               <img
-                src={option.image}
+                src={URL.createObjectURL(option.image)}
                 alt="Option preview"
                 className="w-full h-full object-cover"
               />
@@ -229,12 +235,12 @@ const Step2 = () => {
   const handleAddOption = () => {
     addOption({
       text: '',
-      image: ''
+      image: null
     });
     setShowAddMore(false);
   };
 
-  const handleUpdateOption = (id: string, data: { text?: string; image?: string }) => {
+  const handleUpdateOption = (id: string, data: { text?: string; image?: File | null }) => {
     updateOption(id, data);
   };
 
@@ -249,7 +255,11 @@ const Step2 = () => {
     if (formData.options.length < 2) {
       const newOptions = [...formData.options];
       while (newOptions.length < 2) {
-        newOptions.push({ id: `${Date.now()}${newOptions.length}`, text: '', image: '' });
+        newOptions.push({
+          id: `${Date.now()}${newOptions.length}`,
+          text: '',
+          image: null
+        });
       }
       if (newOptions.length > formData.options.length) {
         useRankStore.getState().updateFormData({ options: newOptions });
@@ -403,29 +413,50 @@ const Step4 = () => {
   const [showOptions, setShowOptions] = useState(false);
 
   const handleRemoveImage = (optionId: string) => {
-    updateOption(optionId, { image: '' });
+    updateOption(optionId, { image: null });
   };
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
 
+  const router = useRouter();
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      // Here you would typically make an API call to save the ranking
-      console.log('Launching ranking:', formData);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Ensure we have at least 2 options with images
+      if (formData.options.length < 2) {
+        throw new Error('Please add at least 2 options with images');
+      }
 
-      // Reset form and show success message
+      const rankrService = RankrService.getInstance();
+
+      // Ensure we have files for both options
+      if (!formData.options[0].image || !formData.options[1].image) {
+        throw new Error('Please ensure both options have images');
+      }
+
+      // Call the createRankr endpoint with the form data
+      const response = await rankrService.createRankr({
+        person1: formData.options[0].image,
+        person2: formData.options[1].image,
+        name_one: formData.options[0].text,
+        name_two: formData.options[1].text,
+        title: formData.rank_title,
+        description: formData.rank_desc || undefined,
+        location: formData.campus || undefined,
+        expiresAt: formData.settings.duration,
+        is_public: formData.settings.isPublic
+      });
+      toast(response.message)
+      // Reset form and redirect to the new ranking
       resetForm();
-      // You might want to redirect to the ranking page or show a success message
-      alert('Ranking launched successfully!');
+      router.push(`/rank/${response.rankr.id}`);
     } catch (error) {
       console.error('Error launching ranking:', error);
-      alert('Failed to launch ranking. Please try again.');
+      toast(error.message || 'Failed to launch ranking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -463,12 +494,11 @@ const Step4 = () => {
           <div className="w-full mt-4 rounded-lg">
             <div className="flex flex-col lg:flex-row items-center justify-center gap-[30px]">
               {formData.options.map((option, index) => (
-                <div 
-                  key={option.id} 
-                  className={`rounded-lg overflow-hidden transition-shadow transform ${
-                    index === 0 ? '-rotate-[4deg]' : 
-                    index === 1 ? 'rotate-[4deg]' : ''
-                  }`}
+                <div
+                  key={option.id}
+                  className={`rounded-lg overflow-hidden transition-shadow transform ${index === 0 ? '-rotate-[4deg]' :
+                      index === 1 ? 'rotate-[4deg]' : ''
+                    }`}
                 >
                   <div className="p-3">
                     <p className="font-semibold text-[22px] instrument-sans tracking-[-0.88px] text-[#001526]">{option.text}</p>
@@ -484,7 +514,7 @@ const Step4 = () => {
                           className={`w-[13px] h-[32px] absolute ${index % 2 == 0 ? 'right-[13.4px]' : 'left-[13.4px]'} -top-[15px]`}
                         />
                         <Image
-                          src={option.image}
+                          src={URL.createObjectURL(option.image)}
                           alt={option.text}
                           width={220}
                           height={237}
@@ -525,119 +555,6 @@ const Step4 = () => {
         </Button>
       </div>
 
-      {/* Main Preview Card */}
-      <div className="bg-white rounded-xl overflow-hidden">
-        {/* Header with Title and Status */}
-        {/* <div className="p-6 border-b border-gray-100">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">{formData.rank_title || 'Untitled Ranking'}</h2>
-              {formData.rank_desc && (
-                <p className="mt-2 text-gray-600">{formData.rank_desc}</p>
-              )}
-            </div>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-              {formData.settings.isPublic ? 'Public' : 'Private'}
-            </span>
-          </div>
-          {formData.campus && (
-            <div className="mt-3 flex items-center text-sm text-gray-500">
-              <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-              </svg>
-              {formData.campus}
-            </div>
-          )}
-        </div> */}
-
-        {/* Options Grid */}
-        {/* <div className="p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Options ({formData.options.length})</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {formData.options.map((option) => (
-              <div key={option.id} className="border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                {option.image ? (
-                  <div className="relative group">
-                    <img
-                      src={option.image}
-                      alt={option.text}
-                      className="w-full h-40 object-cover"
-                    />
-                    <button
-                      onClick={() => handleRemoveImage(option.id)}
-                      className="absolute top-2 right-2 bg-white/90 rounded-full p-1.5 shadow-sm hover:bg-red-50 transition-colors group-hover:opacity-100 opacity-0"
-                      title="Remove image"
-                    >
-                      <svg className="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                ) : (
-                  <div className="w-full h-40 bg-gray-100 flex items-center justify-center text-gray-400">
-                    <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                )}
-                <div className="p-3">
-                  <p className="font-medium text-gray-900">{option.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
-
-        {/* Settings Summary */}
-        {/* <div className="p-6 bg-gray-50 border-t border-gray-100">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">Settings</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              <span className="text-gray-700">
-                {formData.settings.isPublic ? 'Public - Anyone can view and vote' : 'Private - Only people with the link can vote'}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-gray-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {/* <span className="text-gray-700">
-                Voting duration: {durationOptions.find(d => d.value === formData.settings.duration)?.label || '24 hours'}
-              </span> 
-            </div>
-          </div>
-        </div> */}
-
-        {/* Action Buttons */}
-        {/* <div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <button
-            type="button"
-            onClick={prevStep}
-            className="px-5 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            Back to Settings
-          </button>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <button
-              type="button"
-              className="px-6 py-3 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors w-full sm:w-auto"
-            >
-              Save as Draft
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSubmitting || formData.options.length < 2}
-              className="px-6 py-3 bg-[#001526] border border-transparent rounded-lg text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto"
-            >
-              {isSubmitting ? 'Launching...' : 'Launch Ranking'}
-            </button>
-          </div>
-        </div> */}
-      </div>
     </div>
   );
 };

@@ -1,68 +1,84 @@
-import React from 'react'
-import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { userSchema } from '@/models/validations/user.validation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from "@hookform/resolvers/zod"
-import z from 'zod'
-import { Input } from '../ui/input'
+// src/components/user/user-form.tsx
+'use client';
 
-const UserForm = () => {
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { useRankStore } from '@/store/rank.store';
+import { RankrService } from '@/services/rankr.service';
 
-    const form = useForm<z.infer<typeof userSchema>>({
-        resolver: zodResolver(userSchema),
-        defaultValues: {
-            username: "",
-            email: ""
-        },
-    })
+export default function UserForm() {
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { profileImage } = useRankStore();
 
-    function onSubmit(values: z.infer<typeof userSchema>) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-        console.log(values)
+    try {
+      const rankrService = RankrService.getInstance();
+      await rankrService.signup({
+        username,
+        email: email || undefined,
+        user_image: profileImage || undefined
+      });
+      
+      router.push('/welcome');
+    } catch (err) {
+      setError('Failed to sign up. Please try again.');
+      console.error('Signup error:', err);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="satoshi flex flex-col w-full lg:max-w-[341px] max-w-[500px]">
-                <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="!font-medium  !text-[16px] instrument-sans tracking-[-0.64px]">What should we call you?</FormLabel>
-                            <FormControl>
-                                <Input placeholder="John Doe" {...field} className='py-[11px] px-4 h-full' />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="font-medium text-[16px] instrument-sans tracking-[-0.64px] mt-3 ">Enter your email.</FormLabel>
-                            <FormControl>
-                                <Input placeholder="you@example.com" {...field} className='py-[11px] px-4 h-full' />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className='min-w-full h-[1px] bg-[#D4D4D4] my-[30px]'></div>
-                <Button type="submit" className="bg-[#001526] w-full py-[13px] h-[45px]">Submit</Button>
-            </form>
-        </Form>
-    )
+  return (
+    <form onSubmit={handleSubmit} className='w-full space-y-6'>
+      <div className='space-y-2'>
+        <Label htmlFor='username' className='font-medium text-[16px] instrument-sans tracking-[-0.64px]'>
+          What should we call you?
+        </Label>
+        <Input
+          id='username'
+          type='text'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder='John Doe'
+          className='py-[11px] px-4 h-full'
+          required
+        />
+      </div>
+
+      <div className='space-y-2'>
+        <Label htmlFor='email' className='font-medium text-[16px] instrument-sans tracking-[-0.64px] mt-3'>
+          Enter your email.
+        </Label>
+        <Input
+          id='email'
+          type='email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder='you@example.com'
+          className='py-[11px] px-4 h-full'
+        />
+      </div>
+
+      <Button
+        type='submit'
+        className='w-full h-[44px] bg-[#001526] text-white rounded-[5px] hover:bg-[#001a33]'
+        disabled={isLoading}
+      >
+        {isLoading ? 'Creating account...' : 'Continue'}
+      </Button>
+
+      {error && <p className='text-red-500 text-sm mt-2'>{error}</p>}
+    </form>
+  );
 }
-
-export default UserForm
