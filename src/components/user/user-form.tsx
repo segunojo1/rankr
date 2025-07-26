@@ -31,13 +31,13 @@ const UserForm = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="satoshi flex flex-col w-full max-w-[341px]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="satoshi flex flex-col w-full lg:max-w-[341px] max-w-[500px]">
                 <FormField
                     control={form.control}
                     name="username"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="!font-medium  !text-[16px] instrument-sans leading-[-0.64px]">What should we call you?</FormLabel>
+                            <FormLabel className="!font-medium  !text-[16px] instrument-sans tracking-[-0.64px]">What should we call you?</FormLabel>
                             <FormControl>
                                 <Input placeholder="John Doe" {...field} className='py-[11px] px-4 h-full' />
                             </FormControl>
@@ -50,7 +50,7 @@ const UserForm = () => {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="font-medium text-[16px] instrument-sans leading-[-0.64px] mt-3 ">Enter your email.</FormLabel>
+                            <FormLabel className="font-medium text-[16px] instrument-sans tracking-[-0.64px] mt-3 ">Enter your email.</FormLabel>
                             <FormControl>
                                 <Input placeholder="you@example.com" {...field} className='py-[11px] px-4 h-full' />
                             </FormControl>
