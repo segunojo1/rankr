@@ -43,7 +43,7 @@ export default function Team() {
 
     return (
         <div className='max-w-6xl mx-auto px-4 pb-4'>
-            <Link href="/" className='z-[999] relative mx-auto w-[160px] flex mt-[30px]'>
+            <Link href="/welcome" className='z-[9999999] relative mx-auto w-[160px] flex mt-[30px]'>
                 <Button className='w-[160px] h-[44px] bg-[#001526] text-white rounded-[5px] flex items-center justify-center mb-8'>
                     Back Home
                 </Button>
