@@ -485,7 +485,7 @@ const Step4 = () => {
       // const url = `https://userankr.vercel.app/rank/${response.rankr.id}`;
       // await navigator.clipboard.writeText(url);
       // setIsCopied(true);
-      toast.success('Rank created! Link copied to clipboard!');
+      toast.success('Rank created!');
       
       // Reset form and redirect to the new ranking
       resetForm();
@@ -600,7 +600,7 @@ const Step4 = () => {
           disabled={isSubmitting}
           className='w-[341px] border border-[#001526] rounded-[5px] h-[45px] bg-[#001526] text-white hover:bg-[#001a33]'
         >
-          {isSubmitting ? 'Publishing...' : 'Publish and Copy Link'}
+          {isSubmitting ? 'Publishing...' : 'Publish'}
         </Button>
       </div>
 

@@ -2,10 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useRankStore } from '@/store/rank.store';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,10 +28,11 @@ const Leaderboard = () => {
     const { id } = useParams();
     const rankId = Array.isArray(id) ? id[0] : id || '';
     const [isCopied, setIsCopied] = useState(false);
+  const [isLoadingRandomRankr, setIsLoading] = useState(false);
     const [comments, setComments] = useState<Comment[]>([]);
     const [comment, setComment] = useState('');
     const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-
+const router = useRouter();
     const handleShare = async () => {
         const url = `https://userankr.vercel.app/rank/${rankId}`;
         try {
@@ -135,6 +135,23 @@ const Leaderboard = () => {
     // const winnerVotes = Math.max(currentRank.person1Votecount, currentRank.person2Votecount);
     // const loserVotes = Math.min(currentRank.person1Votecount, currentRank.person2Votecount);
 
+
+    const handleRandomRankr = async () => {
+            try {
+              setIsLoading(true);
+              const response = await RankrService.getInstance().selectRandomRankr();
+              if (response?.rankr?.id) {
+                router.push(`/rank/${response.rankr.id}`);
+              } else {
+                toast.error('No random rankr found');
+              }
+            } catch (error) {
+              console.error('Error fetching random rankr:', error);
+              toast.error('Failed to load a random rankr');
+            } finally {
+              setIsLoading(false);
+            }
+    }
     return (
         <div className='flex flex-col items-center py-[100px] px-6'>
             <h1 className='lg:text-[80px] text-[50px] instrument-sans font-medium text-center mb-8 text-[#737373] dark:text-white'>
@@ -219,7 +236,13 @@ const Leaderboard = () => {
             <div className='flex flex-col items-center'>
                 <p className='text-[#737373) text-xl  font-medium leading-[normal] tracking-[-0.8px] mb-[14px]'>Wanna get Ranked?</p>
                 <Link href='/rank' className='w-[341px] h-[45px] bg-[#1F92FF] rounded-[5px] mb-6 text-white flex items-center justify-center'>Create Your  Rankr</Link>
-                <Link href='/rank' className='w-[341px] h-[45px] bg-[#001526] rounded-[5px] text-white flex items-center justify-center'>Vote in another Rankr</Link>
+                <button 
+                  onClick={handleRandomRankr}
+                  disabled={isLoadingRandomRankr}
+                  className='w-[341px] h-[45px] bg-[#001526] rounded-[5px] text-white flex items-center justify-center hover:bg-[#001a33] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  {isLoadingRandomRankr ? 'Loading...' : 'Vote in another Rankr'}
+                </button>
                 <div className='min-w-full h-[1px] bg-[#D4D4D4] mt-[20px] mb-[10px]'></div>
                 <Button 
                     onClick={handleShare}

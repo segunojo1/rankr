@@ -185,4 +185,13 @@ export class RankrService {
     }
   }
 
+  public async selectRandomRankr() {
+    try {
+      const response = await this.api.get('/randomRankr');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
