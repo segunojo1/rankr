@@ -5,6 +5,9 @@ import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { useRankStore } from '@/store/rank.store';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 // interface LeaderboardProps {
 //     params: {
@@ -14,9 +17,22 @@ import { useParams } from 'next/navigation';
 
 const Leaderboard = () => {
     const { currentRank, isLoading, error, fetchRank } = useRankStore();
-    // const id = params.id;
-const {id} = useParams();
-const rankId = Array.isArray(id) ? id[0] : id || '';
+    const { id } = useParams();
+    const rankId = Array.isArray(id) ? id[0] : id || '';
+    const [isCopied, setIsCopied] = useState(false);
+
+    const handleShare = async () => {
+        const url = `https://userankr.vercel.app/rank/${rankId}`;
+        try {
+            await navigator.clipboard.writeText(url);
+            setIsCopied(true);
+            toast.success('Link copied to clipboard!');
+            setTimeout(() => setIsCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy link:', err);
+            toast.error('Failed to copy link');
+        }
+    };
 
     useEffect(() => {
         if (rankId) {
@@ -74,72 +90,76 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                 <p className='md:text-[24px] text-[14px] font-medium instrument-sans p-[5px] rounded-[7px] bg-[#F0F0EF] w-fit'>Current Stats:</p>
             </div>
             <div className='flex flex-col items-start gap-6 mb-[100px] w-fit'>
-                <div className='flex items-center lg:gap-6 gap-5'>
-                    <Image
-                        src={currentRank.person_one_image_url}
-                        alt={currentRank.person_one_name}
-                        width={61}
-                        height={63}
-                        className='w-[38px] md:w-[61px] h-auto rounded-full object-cover aspect-square'
-                    />
-                    <div className='flex flex-col gap-[5px]'>
-                        <div className='flex items-center md:gap-[10px] gap-[6px]'>
+                {[{
+                    id: '1',
+                    name: currentRank.person_one_name,
+                    image: currentRank.person_one_image_url,
+                    votes: currentRank.person1Votecount,
+                    position: currentRank.person1Votecount > currentRank.person2Votecount ? 1 : 
+                              currentRank.person1Votecount < currentRank.person2Votecount ? 2 : 0 // 0 means tie
+                }, {
+                    id: '2',
+                    name: currentRank.person_two_name,
+                    image: currentRank.person_two_image_url,
+                    votes: currentRank.person2Votecount,
+                    position: currentRank.person2Votecount > currentRank.person1Votecount ? 1 : 
+                              currentRank.person2Votecount < currentRank.person1Votecount ? 2 : 0 // 0 means tie
+                }]
+                .sort((a, b) => b.votes - a.votes)
+                .map((person, index) => {
+                    const isWinner = person.position === 1;
+                    const isTie = person.position === 0;
+                    const barColor = isWinner ? '#ECC25F' : '#a3a3a3';
+                    const borderColor = isWinner ? '#B48A47' : '#a3a3a3';
+                    
+                    return (
+                        <div key={person.id} className='flex items-center lg:gap-6 gap-5'>
                             <Image
-                                src={'/assets/winner.svg'}
-                                alt='winner'
-                                width={35}
-                                height={32}
+                                src={person.image}
+                                alt={person.name}
+                                width={61}
+                                height={63}
+                                className='w-[38px] md:w-[61px] h-auto rounded-full object-cover aspect-square'
                             />
-                            <p className='md:text-[28px] text-[17px] instrument-serif italic font-normal md:-leading-[1.12px] -leading-[0.69px]'>
-                                {currentRank.person_one_name}
-                            </p>
-                        </div>
-                        <div className='lg:w-[178px] w-[110px] lg:h-[36px] h-[22px] flex items-center px-[2px] border border-[#B48A47] lg:rounded-[13px] rounded-[5px]'>
-                            <div 
-                                className='lg:h-[32px] h-[18px] bg-[#ECC25F] lg:rounded-[13px] rounded-[5px] transition-all duration-500'
-                                style={{
-                                    width: `${(currentRank.person1Votecount / totalVotes) * 100}%`,
-                                    minWidth: '10px',
-                                }}
-                            ></div>
-                        </div>
-                    </div>
-                    <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'>
-                        <span className='text-[#001526] instrument-serif italic'>{currentRank.person1Votecount}</span>/{totalVotes} votes
-                    </p>
-                </div>
-
-                <div className='flex items-center lg:gap-6 gap-5'>
-                    <Image
-                        src={currentRank.person_two_image_url}
-                        alt={currentRank.person_two_name}
-                        width={61}
-                        height={63}
-                        className='w-[38px] md:w-[61px] h-auto rounded-full object-cover aspect-square'
-                    />
-                    <div className='flex flex-col gap-[5px]'>
-                        <div className='flex items-center md:gap-[10px] gap-[6px]'>
-                            <div className='w-[35px] h-8 flex items-center justify-center'>
-                                <span className='text-gray-400 text-lg'>2</span>
+                            <div className='flex flex-col gap-[5px]'>
+                                <div className='flex items-center md:gap-[10px] gap-[6px]'>
+                                    {isWinner && !isTie ? (
+                                        <Image
+                                            src={'/assets/winner.svg'}
+                                            alt='winner'
+                                            width={35}
+                                            height={32}
+                                        />
+                                    ) : (
+                                        <div className='w-[35px] h-8 flex items-center justify-center'>
+                                            <span className={`${isTie ? 'text-gray-400' : 'text-gray-500'} text-lg`}>
+                                                {index + 1}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <p className='md:text-[28px] text-[17px] instrument-serif italic font-normal md:-leading-[1.12px] -leading-[0.69px]'>
+                                        {person.name}
+                                    </p>
+                                </div>
+                                <div className='lg:w-[178px] w-[110px] lg:h-[36px] h-[22px] flex items-center px-[2px] border lg:rounded-[13px] rounded-[5px]'
+                                    style={{ borderColor }}
+                                >
+                                    <div 
+                                        className='lg:h-[32px] h-[18px] lg:rounded-[13px] rounded-[5px] transition-all duration-500'
+                                        style={{
+                                            width: `${(person.votes / totalVotes) * 100}%`,
+                                            minWidth: '10px',
+                                            backgroundColor: isTie ? '#a3a3a3' : barColor
+                                        }}
+                                    ></div>
+                                </div>
                             </div>
-                            <p className='md:text-[28px] text-[17px] instrument-serif italic font-normal md:-leading-[1.12px] -leading-[0.69px]'>
-                                {currentRank.person_two_name}
+                            <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'>
+                                <span className='text-[#001526] instrument-serif italic'>{person.votes}</span>/{totalVotes} votes
                             </p>
                         </div>
-                        <div className='lg:w-[178px] w-[110px] lg:h-[36px] h-[22px] flex items-center px-[2px] border border-[#a3a3a3] lg:rounded-[13px] rounded-[5px]'>
-                            <div 
-                                className='lg:h-[32px] h-[18px] bg-[#a3a3a3] lg:rounded-[13px] rounded-[5px] transition-all duration-500'
-                                style={{
-                                    width: `${(currentRank.person2Votecount / totalVotes) * 100}%`,
-                                    minWidth: '10px',
-                                }}
-                            ></div>
-                        </div>
-                    </div>
-                    <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'>
-                        <span className='text-[#001526] instrument-serif italic'>{currentRank.person2Votecount}</span>/{totalVotes} votes
-                    </p>
-                </div>
+                    );
+                })}
             </div>
 
             <div className='flex flex-col items-center'>
@@ -147,8 +167,14 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                 <Link href='/rank' className='w-[341px] h-[45px] bg-[#1F92FF] rounded-[5px] mb-6 text-white flex items-center justify-center'>Create Your  Rankr</Link>
                 <Link href='/rank' className='w-[341px] h-[45px] bg-[#001526] rounded-[5px] text-white flex items-center justify-center'>Vote in another Rankr</Link>
                 <div className='min-w-full h-[1px] bg-[#D4D4D4] mt-[20px] mb-[10px]'></div>
-                <Link href='/rank' className='w-[341px] h-[45px] bg-[#fff] text-[#001526] border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center'>Share</Link>
-                <Link href='/devs' className=' text-[#737373] text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A]'>devs</span> →</Link>
+                <Button 
+                    onClick={handleShare}
+                    className={`w-[341px] h-[45px] bg-[#fff] hover:text-white text-[#001526] border border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center ${isCopied ? 'bg-green-50' : ''}`}
+                    disabled={isCopied}
+                >
+                    {isCopied ? 'Copied!' : 'Share'}
+                </Button>
+                <Link href='/team' className=' text-[#737373] text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A]'>team</span> →</Link>
             </div>
         </div>
     )

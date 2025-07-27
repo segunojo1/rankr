@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { toast } from 'sonner';
 
 export interface SignupData {
@@ -140,6 +140,45 @@ export class RankrService {
   public async getRankr(rankId: string) {
     try {
       const response = await this.api.get(`/rankr/${rankId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async reportRankr(rankId: string, reportData: { name: string; email: string; complaint: string }) {
+    try {
+      const response = await this.api.post(`report`, {
+        rankId,
+        ...reportData
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async postComment(postId: string, comment: string) {
+    try {
+      const response = await this.api.post(`/comment`, {
+        postId,
+        comment
+      });
+      return response.data;
+    }  catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as AxiosError<{ error?: string }>;
+        const errorMessage = axiosError.response?.data?.error || 'Failed to submit comment. Please try again.';
+        toast(errorMessage);
+      } else {
+        toast('An unexpected error occurred');
+      }
+    }
+  }
+
+  public async getComments(postId: string) {
+    try {
+      const response = await this.api.get(`/comments/${postId}`);
       return response.data;
     } catch (error) {
       throw error;

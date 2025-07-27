@@ -9,7 +9,13 @@ import { useRankStore } from '@/store/rank.store';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { formatDistanceToNow } from 'date-fns';
 
 // Dynamically import ReactConfetti to avoid SSR issues
 const ReactConfetti = dynamic(() => import('react-confetti'), {
@@ -23,10 +29,26 @@ interface VoteOption {
 }
 
 const Rank = () => {
+    const router = useRouter();
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [hasVoted, setHasVoted] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+    const [isCopied, setIsCopied] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportForm, setReportForm] = useState({
+        name: '',
+        email: '',
+        complaint: ''
+    });
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+    const [comment, setComment] = useState('');
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+    const [comments, setComments] = useState<Array<{
+        id: string;
+        comment: string;
+        createdAt: string;
+    }>>([]);
     const {
         currentRank,
         isLoading,
@@ -36,8 +58,20 @@ const Rank = () => {
     } = useRankStore();
 
     // const rankId = params.id;
-const {id} = useParams()
-const rankId = Array.isArray(id) ? id[0] : id || '';
+    const { id } = useParams();
+    const rankId = Array.isArray(id) ? id[0] : id || '';
+
+    // Check if user has already voted on this rank
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const voteKey = `rank_${rankId}_vote`;
+            const voteData = localStorage.getItem(voteKey);
+            if (voteData) {
+                // User has already voted, redirect to leaderboard
+                router.push(`/rank/${rankId}/leaderboard`);
+            }
+        }
+    }, [rankId, router]);
 
     const options = React.useMemo(() => {
         if (!currentRank) return [];
@@ -87,8 +121,26 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
             }
         }
 
-        // Fetch rank data
-        fetchRank(rankId);
+            // Fetch rank data and comments
+        const fetchData = async () => {
+            try {
+                await fetchRank(rankId);
+                if (rankId) {
+                    const response = await RankrService.getInstance().getComments(rankId);
+                    if (response && response.comments) {
+                        setComments(response.comments);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                toast.error('Failed to load comments');
+            }
+        };
+
+        // Only fetch data on client side to prevent hydration issues
+        if (typeof window !== 'undefined') {
+            fetchData();
+        }
 
         // Cleanup function
         return () => {
@@ -97,11 +149,61 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
         };
     }, [id, fetchRank, setCurrentRank]);
 
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!comment.trim() || !rankId) return;
+
+        try {
+            setIsSubmittingComment(true);
+            const response = await RankrService.getInstance().postComment(rankId, comment);
+            
+            // Update the comments list with the new comment from the response
+            setComments(prevComments => [{
+                id: response.comment.id,
+                comment: response.comment.comment,
+                createdAt: response.comment.createdAt
+            }, ...prevComments]);
+            
+            setComment('');
+            toast.success('Comment added!');
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            toast.error('Failed to post comment. Please try again.');
+        } finally {
+            setIsSubmittingComment(false);
+        }
+    };
+
+    const handleReportSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!reportForm.name || !reportForm.email || !reportForm.complaint) {
+            toast.error('Please fill in all fields');
+            return;
+        }
+
+        try {
+            setIsSubmittingReport(true);
+            await RankrService.getInstance().reportRankr(rankId, {
+                name: reportForm.name,
+                email: reportForm.email,
+                complaint: reportForm.complaint
+            });
+            
+            toast.success('Report submitted successfully');
+            setIsReportModalOpen(false);
+            setReportForm({ name: '', email: '', complaint: '' });
+        } catch (error) {
+            console.error('Error submitting report:', error);
+            toast.error('Failed to submit report. Please try again.');
+        } finally {
+            setIsSubmittingReport(false);
+        }
+    };
+
     const handleVote = async (optionId: string) => {
         if (hasVoted || !id || !currentRank) return;
 
         try {
-            // Optimistic UI update
             setSelectedOption(optionId);
             setHasVoted(true);
 
@@ -125,6 +227,8 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
             try {
                 await rankrService.vote(rankId, optionId);
                 
+                
+                
             } catch (error: unknown) {
                 if (error && typeof error === 'object' && 'response' in error) {
                     const axiosError = error as AxiosError<{ error?: string }>;
@@ -134,6 +238,8 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                     toast('An unexpected error occurred');
                 }
             }
+            await new Promise(resolve => setTimeout(resolve, 2000));
+                router.push(`/rank/${rankId}/leaderboard`);
 
         } catch (error) {
             console.error('Error submitting vote:', error);
@@ -214,13 +320,13 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                 {options.map((option, index: number) => (
                     <React.Fragment key={option.id}>
                         {index === 1 && (
-                            <div className='flex items-center self-start -mt-7 justify-center w-16 h-16'>
+                            <div className='md:flex hidden items-center self-start -mt-7 justify-center w-16 h-16'>
                                 <Image 
                                     src="/assets/vs.png"
                                     alt="versus"
                                     width={63}
                                     height={63}
-                                    className='w-[63px] h-[63px]'
+                                    className='w-[63px] h-[63px] '
                                 />
                             </div>
                         )}
@@ -264,13 +370,23 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
             </div>
 
             <div className='mt-12 flex flex-col items-center gap-6'>
-                <button className='p-2 hover:bg-gray-100 rounded-full transition-colors'>
+                <button 
+                    onClick={() => {
+                        const url = `https://userankr.vercel.app/rank/${id}`;
+                        navigator.clipboard.writeText(url);
+                        setIsCopied(true);
+                        toast.success('Link copied to clipboard!');
+                        setTimeout(() => setIsCopied(false), 2000);
+                    }}
+                    className={`p-2 rounded-full transition-colors ${isCopied ? 'bg-green-100' : 'hover:bg-gray-100'}`}
+                    title="Copy link to share"
+                >
                     <Image
                         src="/assets/share.png"
                         alt="share"
                         width={30}
                         height={30}
-                        className='w-[30px] h-[30px]'
+                        className={`w-[30px] h-[30px] ${isCopied ? 'opacity-70' : ''}`}
                     />
                 </button>
 
@@ -283,18 +399,13 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                             height={36}
                             className='w-[175px] h-[36px]'
                         />
-                        <p className='lg:text-[20px] text-[14px] instrument-sans font-normal text-[#737373] text-center'>
-                            All images are uploaded by creators. If something looks off,{' '}
-                            <button className='text-[#0a0a0a] hover:underline'>
-                                report it →
-                            </button>
-                        </p>
+                        
                     </div>
                 ) : (
                     <div className='flex flex-col items-center gap-[55px]'>
-                        <Link href={`/rank/${id}/leaderboard`} className='bg-black h-12 w-[250px] flex items-center justify-center text-[20px] font-bold  text-white rounded-md'>View Leaderboard</Link>
+                        {/* <Link href={`/rank/${id}/leaderboard`} className='bg-black h-12 w-[250px] flex items-center justify-center text-[20px] font-bold  text-white rounded-md'>View Leaderboard</Link> */}
                         <div className='flex items-center gap-2'>
-                            <p className='text-[24px] instrument-sans tracking-[-0.8px] font-normal text-[#737373]'>That Vote Was a Little Too <span className='text-[#0a0a0a] instrument-serif font-normal italic'>Personal.</span>  </p>
+                            <p className='md:text-[24px] text-[20px] instrument-sans tracking-[-0.8px] font-normal text-[#737373]'>That Vote Was a Little Too <span className='text-[#0a0a0a] instrument-serif font-normal italic'>Personal.</span>  </p>
                             <Image
                                 src="/assets/mdi_flame.svg"
                                 alt="mdi_flame"
@@ -304,16 +415,131 @@ const rankId = Array.isArray(id) ? id[0] : id || '';
                             />
                         </div>
 
-                        <p className='lg:text-[20px] text-[14px] instrument-sans font-normal text-[#737373] text-center'>
-                            All images are uploaded by creators. If something looks off,{' '}
-                            <button className='text-[#0a0a0a] hover:underline'>
-                                report it →.
-                            </button>
-                        </p>
                     </div>
                 )}
+                <p className='lg:text-[20px] text-[14px] instrument-sans font-normal text-[#737373] text-center'>
+                            All images are uploaded by creators. If something looks off,{' '}
+                            <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
+                                <DialogTrigger asChild>
+                                    <button className='text-[#0a0a0a] hover:underline'>
+                                        report it →
+                                    </button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Report Inappropriate Content</DialogTitle>
+                                    </DialogHeader>
+                                    <form onSubmit={handleReportSubmit} className="space-y-4">
+                                        <div>
+                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                                                Your Name
+                                            </label>
+                                            <Input
+                                                id="name"
+                                                value={reportForm.name}
+                                                onChange={(e) => setReportForm({...reportForm, name: e.target.value})}
+                                                placeholder="John Doe"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                                Email
+                                            </label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                value={reportForm.email}
+                                                onChange={(e) => setReportForm({...reportForm, email: e.target.value})}
+                                                placeholder="your@email.com"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label htmlFor="complaint" className="block text-sm font-medium text-gray-700 mb-1">
+                                                What's the issue?
+                                            </label>
+                                            <Textarea
+                                                id="complaint"
+                                                value={reportForm.complaint}
+                                                onChange={(e) => setReportForm({...reportForm, complaint: e.target.value})}
+                                                placeholder="Please describe the issue..."
+                                                rows={4}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="flex justify-end space-x-2 pt-2">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                onClick={() => setIsReportModalOpen(false)}
+                                                disabled={isSubmittingReport}
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button type="submit" disabled={isSubmittingReport}>
+                                                {isSubmittingReport ? 'Submitting...' : 'Submit Report'}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        </p>
+
+                {/* Comments Section */}
+                <div className='mt-12 w-full max-w-3xl mx-auto'>
+                    <h3 className='text-xl font-medium text-[#001526] mb-6'>Comments ({comments.length})</h3>
+                    
+                    {/* Comment Form */}
+                    <form onSubmit={handleCommentSubmit} className='mb-8'>
+                        <Textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder='Add an anonymous comment...'
+                            className='min-h-[100px] resize-none border-[#D4D4D4] focus-visible:ring-1 focus-visible:ring-[#001526] w-full'
+                            disabled={isSubmittingComment}
+                        />
+                        <div className='flex justify-end mt-2'>
+                            <Button 
+                                type='submit' 
+                                className='bg-[#001526] hover:bg-[#001526]/90'
+                                disabled={!comment.trim() || isSubmittingComment}
+                            >
+                                {isSubmittingComment ? 'Posting...' : 'Post Comment'}
+                            </Button>
+                        </div>
+                    </form>
+
+                    {/* Comments List */}
+                    <div className='space-y-4'>
+                        {comments.map((comment) => (
+                            <div key={comment.id} className='flex gap-3'>
+                                <div className='flex-shrink-0'>
+                                    <div className='h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm font-medium'>
+                                        A
+                                    </div>
+                                </div>
+                                <div className='flex-1 min-w-0'>
+                                    <div className='bg-[#F9F9F9] rounded-lg '>
+                                        <div className='flex items-center gap-2 mb-1'>
+                                            <span className='text-sm font-medium text-[#001526]'>Anonymous</span>
+                                            <span className='text-xs text-[#737373]'>
+                                                {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) : 'Just now'}
+                                            </span>
+                                        </div>
+                                        <p className='text-[#0A0A0A] whitespace-pre-wrap break-words'>{comment.comment}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        
+                        {comments.length === 0 && (
+                            <p className='text-center text-[#737373] py-8'>No comments yet. Be the first to comment!</p>
+                        )}
+                    </div>
+                </div>
             </div>
-        </div >
+        </div>
     )
 }
 

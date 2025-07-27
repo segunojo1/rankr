@@ -81,6 +81,7 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
                     alt={name}
                     width={247}
                     height={267}
+                    draggable={false}
                     className='md:w-full w-[104px] md:h-auto h-[122px] md:aspect-[247/267]  object-cover rounded-md'
                 />
             </div>

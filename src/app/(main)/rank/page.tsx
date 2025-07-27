@@ -421,6 +421,7 @@ const Step4 = () => {
   };
 
   const router = useRouter();
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -451,9 +452,18 @@ const Step4 = () => {
         is_public: formData.settings.isPublic
       });
       toast(response.message)
+      // Copy the rank URL to clipboard
+      const url = `https://userankr.vercel.app/rank/${response.rankr.id}`;
+      await navigator.clipboard.writeText(url);
+      setIsCopied(true);
+      toast.success('Rank created! Link copied to clipboard!');
+      
       // Reset form and redirect to the new ranking
       resetForm();
       router.push(`/rank/${response.rankr.id}`);
+      
+      // Reset copied state after delay
+      setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
       console.error('Error launching ranking:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to launch ranking. Please try again.';
