@@ -232,7 +232,7 @@ const Leaderboard = () => {
             </div>
             
             {/* Comments Section */}
-            <div className='mt-12 max-w-3xl mx-auto sm:px-6 lg:px-8'>
+            <div className='mt-12 max-w-3xl mx-auto max-w-[500px] w-full sm:px-6 lg:px-8'>
                 <h2 className='text-2xl font-bold text-[#001526] mb-6'>Comments</h2>
                 
                 {/* Comment Form */}
