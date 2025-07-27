@@ -29,6 +29,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { RankrService } from '@/services/rankr.service';
 import { toast } from 'sonner';
+import { ArrowLeft } from 'lucide-react';
 
 const Step1 = () => {
   const form = useForm<z.infer<typeof RankInfoSchema>>({
@@ -40,7 +41,7 @@ const Step1 = () => {
     },
   })
 
-  const { updateFormData, nextStep } = useRankStore();
+  const { updateFormData, prevStep, nextStep } = useRankStore();
 
   function onSubmit(values: z.infer<typeof RankInfoSchema>) {
     updateFormData({
@@ -52,10 +53,20 @@ const Step1 = () => {
   }
 
   return (
-    <div className="w-full ">
-      <h1 className='lg:text-[80px] text-[55px] lg:tracking-[-3.2px] tracking-[-2.4px]  font-medium text-center mb-12 text-gray-500'>
-        What do you want people to <span className='instrument-serif font-normal italic text-[#001526]'>rank</span>?
-      </h1>
+    <div className="w-full">
+      <div className="flex items-center justify-center mb-12">
+        <button
+          onClick={prevStep}
+          className="mr-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back to previous step"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+        </button>
+        <h1 className='lg:text-[80px] text-[55px] lg:tracking-[-3.2px] tracking-[-2.4px] font-medium text-center text-gray-500 dark:text-white'>
+          What do you want people to <span className='instrument-serif font-normal italic text-[#001526] dark:text-white'>rank</span>?
+        </h1>
+        <div className="w-10"></div>
+      </div>
 
       <Form {...form} >
         <form onSubmit={form.handleSubmit(onSubmit)} className="satoshi flex flex-col w-full max-w-[341px] mx-auto">
@@ -99,7 +110,7 @@ const Step1 = () => {
             )}
           />
           <div className='min-w-full h-[1px] bg-[#D4D4D4] my-[30px]'></div>
-          <Button type="submit" className="bg-[#001526] w-full py-[13px] h-[45px] font-medium text-[16px] instrument-sans leading-[-0.64px]">Continue</Button>
+          <Button type="submit" className="bg-[#001526] dark:bg-white w-full py-[13px] h-[45px] font-medium text-[16px] instrument-sans leading-[-0.64px]">Continue</Button>
         </form>
       </Form>
     </div>
@@ -186,7 +197,7 @@ const OptionInput = ({
             />
           </div>
         </div>
-        <p className="text-sm font-normal text-[#404040] text-center">
+        <p className="text-sm font-normal text-[#404040] dark:text-white text-center">
           Let people see who they're ranking. Images make it more personal — use with permission 😉
         </p>
         <div className='flex items-center gap-1' onClick={triggerFileInput}>
@@ -196,7 +207,7 @@ const OptionInput = ({
             width={16}
             height={16}
           />
-          <p className='text-[#404040] text-[14px] font-medium tracking-[-0.56px] underline'>Upload a picture</p>
+          <p className='text-[#404040] dark:text-white text-[14px] font-medium tracking-[-0.56px] underline'>Upload a picture</p>
         </div>
 
       </div>
@@ -269,9 +280,18 @@ const Step2 = () => {
 
   return (
     <div className="w-full max-w-2xl flex flex-col items-center mx-auto">
-      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-[10px] text-gray-500'>
-        Add <span className='instrument-serif font-normal italic text-[#001526]'>Options</span>
-      </h1>
+      <div className="flex items-center justify-center mb-6 w-full relative">
+        <button
+          onClick={prevStep}
+          className="absolute left-0 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back to previous step"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+        </button>
+        <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center text-gray-500 dark:text-white'>
+          Add <span className='instrument-serif font-normal italic text-[#001526] dark:text-white'>Options</span>
+        </h1>
+      </div>
 
       <div className="space-y-6 max-w-[341px]">
         <p className='text-[#191919] text-[16px] font-normal tracking-[-0.64px]'>Who are the contenders?</p>
@@ -285,8 +305,8 @@ const Step2 = () => {
               onAdd={handleAddOption}
             />
           ))}
-          <Button onClick={handleAddOption}
-            className='py-1 px-5 bg-[#1F92FF] rounded-[5px] text-white text-[14px] font-medium self-end justify-self-end'>Add another option</Button>
+          {/* <Button onClick={handleAddOption}
+            className='py-1 px-5 bg-[#1F92FF] rounded-[5px] text-white text-[14px] font-medium self-end justify-self-end'>Add another option</Button> */}
         </div>
         <div className='min-w-full h-[1px] bg-[#D4D4D4] my-[30px]'></div>
 
@@ -303,7 +323,7 @@ const Step2 = () => {
             type="button"
             onClick={nextStep}
             disabled={formData.options.length < 2 || formData.options.some(opt => !opt.text.trim())}
-            className="bg-[#001526] h-[45px] w-[341px]"
+            className="bg-[#001526] dark:bg-white h-[45px] w-[341px]"
           >
             Continue
           </Button>
@@ -345,13 +365,22 @@ const Step3 = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-8 text-gray-500'>
-        Choose <span className='instrument-serif italic text-[#001526]'>Voting</span> Style
-      </h1>
+      <div className="flex items-center justify-center mb-8 w-full relative">
+        <button
+          onClick={prevStep}
+          className="absolute md:-left-10 left-0 p-2  rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back to previous step"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+        </button>
+        <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center text-gray-500 dark:text-white'>
+          Choose <span className='instrument-serif italic text-[#001526] dark:text-white'>Voting</span> Style
+        </h1>
+      </div>
 
-      <div className=" gap-3 bg-white rounded-lg max-w-[340px] w-full flex flex-col items-center mx-auto">
+      <div className=" gap-3  rounded-lg max-w-[340px] w-full flex flex-col items-center mx-auto">
         <div className="space-y-2 w-full">
-          <label className="block text-sm font-medium text-[#191919] mb-1">Visibility</label>
+          <label className="block text-sm font-medium text-[#191919] dark:text-white mb-1">Visibility</label>
           <Select
             value={formData.settings.isPublic ? 'public' : 'private'}
             onValueChange={(value) => handleVisibilityChange({ target: { value } } as any)}
@@ -372,7 +401,7 @@ const Step3 = () => {
         </div>
 
         <div className="space-y-2 w-full">
-          <label className="block text-sm font-medium text-[#191919] mb-1">Voting Duration</label>
+          <label className="block text-sm font-medium text-[#191919] dark:text-white mb-1">Voting Duration</label>
           <Select
             value={formData.settings.duration}
             onValueChange={(value) => handleDurationChange({ target: { value } } as any)}
@@ -398,7 +427,7 @@ const Step3 = () => {
         <Button
           type="button"
           onClick={nextStep}
-          className="bg-[#001526]  h-[45px] w-[341px]"
+          className="bg-[#001526] dark:bg-white h-[45px] w-[341px]"
         >
           Preview
         </Button>
@@ -453,9 +482,9 @@ const Step4 = () => {
       });
       toast(response.message)
       // Copy the rank URL to clipboard
-      const url = `https://userankr.vercel.app/rank/${response.rankr.id}`;
-      await navigator.clipboard.writeText(url);
-      setIsCopied(true);
+      // const url = `https://userankr.vercel.app/rank/${response.rankr.id}`;
+      // await navigator.clipboard.writeText(url);
+      // setIsCopied(true);
       toast.success('Rank created! Link copied to clipboard!');
       
       // Reset form and redirect to the new ranking
@@ -463,7 +492,7 @@ const Step4 = () => {
       router.push(`/rank/${response.rankr.id}`);
       
       // Reset copied state after delay
-      setTimeout(() => setIsCopied(false), 2000);
+      // setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
       console.error('Error launching ranking:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to launch ranking. Please try again.';
@@ -475,9 +504,18 @@ const Step4 = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4">
-      <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center mb-6 text-[#737373]'>
-        Preview and <span className='instrument-serif italic text-[#001526]'>Launch</span>
-      </h1>
+      <div className="flex items-center justify-center mb-6 w-full relative">
+        <button
+          onClick={prevStep}
+          className="absolute left-0 md:-left-10 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Go back to previous step"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+        </button>
+        <h1 className='lg:text-[80px] text-[60px] lg:tracking-[-3.2px] tracking-[-2.4px] instrument-sans font-medium text-center text-[#737373] dark:text-white'>
+          Preview and <span className='instrument-serif italic text-[#001526] dark:text-white'>Launch</span>
+        </h1>
+      </div>
       <div className='flex flex-col  w-full gap-[30px] items-center mx-auto'>
         <div className='px-[50px] py-[26px] flex gap-[100px] shadow-sm w-fit rounded-[10px] text-[14px] font-medium tracking-[-0.56px]'>
           <div>
@@ -634,9 +672,9 @@ const Rank = () => {
         {/* Progress bar */}
         <div className='fixed top-0 bottom-0 h-fit my-auto lg:right-1/4 right-2 '>
           <div className="relative  max-h-[212px]">
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 -translate-x-1/2">
+            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800 -translate-x-1/2">
               <div
-                className="absolute left-0 w-full bg-[#001526] transition-all duration-300"
+                className="absolute left-0 w-full bg-[#001526] dark:bg-white transition-all duration-300"
                 style={{
                   height: `${(currentStep / (steps.length - 1)) * 100}%`,
                   top: 0
@@ -647,7 +685,7 @@ const Rank = () => {
               {steps.map((_, index) => (
                 <div key={index} className="relative z-10 flex items-center py-4">
                   <div
-                    className={`w-[10px] h-[10px] rounded-full ${index <= currentStep ? 'bg-[#001526]' : 'bg-gray-200'}`}
+                    className={`w-[10px] h-[10px] rounded-full ${index <= currentStep ? 'bg-[#001526] dark:bg-white' : 'bg-gray-200 dark:bg-gray-800'}`}
                   />
                 </div>
               ))}

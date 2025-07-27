@@ -137,11 +137,11 @@ const Leaderboard = () => {
 
     return (
         <div className='flex flex-col items-center py-[100px] px-6'>
-            <h1 className='lg:text-[80px] text-[50px] instrument-sans font-medium text-center mb-8 text-[#737373]'>
-                You voted for <span className='instrument-serif italic text-[#001526]'>{votedPersonName}</span>!
+            <h1 className='lg:text-[80px] text-[50px] instrument-sans font-medium text-center mb-8 text-[#737373] dark:text-white'>
+                You voted for <span className='instrument-serif italic text-[#001526] dark:text-white'>{votedPersonName}</span>!
             </h1>
-            <div className='p-[1.2px] border border-[#f0f0ef]'>
-                <p className='md:text-[24px] text-[14px] font-medium instrument-sans p-[5px] rounded-[7px] bg-[#F0F0EF] w-fit'>Current Stats:</p>
+            <div className='p-[1.2px] border border-[#f0f0ef] dark:border-[#000000]'>
+                <p className='md:text-[24px] text-[14px] font-medium instrument-sans p-[5px] rounded-[7px] bg-[#F0F0EF] dark:bg-[#000000] w-fit'>Current Stats:</p>
             </div>
             <div className='flex flex-col items-start gap-6 mb-[100px] w-fit'>
                 {[{
@@ -208,8 +208,8 @@ const Leaderboard = () => {
                                     ></div>
                                 </div>
                             </div>
-                            <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] p-[10px] self-end'>
-                                <span className='text-[#001526] instrument-serif italic'>{person.votes}</span>/{totalVotes} votes
+                            <p className='lg:text-[28px] text-[17px] tracking-[-0.69px] instrument-sans font-medium text-[#737373] dark:text-white p-[10px] self-end'>
+                                <span className='text-[#001526] dark:text-white instrument-serif italic'>{person.votes}</span>/{totalVotes} votes
                             </p>
                         </div>
                     );
@@ -223,17 +223,17 @@ const Leaderboard = () => {
                 <div className='min-w-full h-[1px] bg-[#D4D4D4] mt-[20px] mb-[10px]'></div>
                 <Button 
                     onClick={handleShare}
-                    className={`w-[341px] h-[45px] bg-[#fff] hover:text-white text-[#001526] border border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center ${isCopied ? 'bg-green-50' : ''}`}
+                    className={`w-[341px] h-[45px] bg-[#fff] hover:text-white text-[#001526] dark:text-white border border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center ${isCopied ? 'bg-green-50' : ''}`}
                     disabled={isCopied}
                 >
                     {isCopied ? 'Copied!' : 'Share'}
                 </Button>
-                <Link href='/team' className=' text-[#737373] text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A]'>team</span> →</Link>
+                <Link href='/team' className=' text-[#737373] dark:text-white text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A]'>team</span> →</Link>
             </div>
             
             {/* Comments Section */}
-            <div className='mt-12 max-w-3xl mx-auto max-w-[500px] w-full sm:px-6 lg:px-8'>
-                <h2 className='text-2xl font-bold text-[#001526] mb-6'>Comments</h2>
+            <div className='mt-12 mx-auto max-w-[500px] w-full sm:px-6 lg:px-8'>
+                <h2 className='text-2xl font-bold text-[#001526] dark:text-white mb-6'>Comments</h2>
                 
                 {/* Comment Form */}
                 <form onSubmit={handleCommentSubmit} className='mb-8'>
@@ -267,8 +267,8 @@ const Leaderboard = () => {
                             <div className='flex-1 min-w-0'>
                                 <div className='bg-[#F9F9F9] rounded-lg'>
                                     <div className='flex items-center gap-2 mb-1'>
-                                        <span className='text-sm font-medium text-[#001526]'>Anonymous</span>
-                                        <span className='text-xs text-[#737373]'>
+                                        <span className='text-sm font-medium text-[#001526] dark:text-white'>Anonymous</span>
+                                        <span className='text-xs text-[#737373] dark:text-white'>
                                             {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) : 'Just now'}
                                         </span>
                                     </div>

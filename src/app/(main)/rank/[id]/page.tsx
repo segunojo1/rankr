@@ -218,7 +218,7 @@ const Rank = () => {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mb-4"></div>
-                <p className="text-gray-700">Loading rank data...</p>
+                <p className="text-gray-700 dark:text-white">Loading rank data...</p>
             </div>
         );
     }
@@ -237,7 +237,7 @@ const Rank = () => {
     if (!currentRank) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <p className="text-gray-700">No rank data available</p>
+                <p className="text-gray-700 dark:text-white">No rank data available</p>
             </div>
         );
     }
@@ -282,7 +282,7 @@ const Rank = () => {
                         )}
                         <div className='flex flex-col items-center gap-4'>
                             <div className='text-center'>
-                                <p className='font-semibold lg:text-[30px] text-[22px] instrument-sans text-[#001526] tracking-[-0.8px]'>
+                                <p className='font-semibold lg:text-[30px] text-[22px] instrument-sans text-[#001526] dark:text-white tracking-[-0.8px]'>
                                     {option.name}
                                 </p>
                             </div>
@@ -308,7 +308,7 @@ const Rank = () => {
                             {!hasVoted && (
                                 <button
                                     onClick={() => handleVote(option.id)}
-                                    className={`mt-2 hover:text-pink-600 text-[#737373] transition-colors ${index % 2 === 0 ? 'self-start' : 'self-end'}`}
+                                    className={`mt-2 hover:text-pink-600 text-[#737373] dark:text-white transition-colors ${index % 2 === 0 ? 'self-start' : 'self-end'}`}
                                     aria-label={`Vote for ${option.name}`}
                                 >
                                     <HeartIcon className='w-8 h-8' />
@@ -355,7 +355,7 @@ const Rank = () => {
                     <div className='flex flex-col items-center gap-[55px]'>
                         {/* <Link href={`/rank/${id}/leaderboard`} className='bg-black h-12 w-[250px] flex items-center justify-center text-[20px] font-bold  text-white rounded-md'>View Leaderboard</Link> */}
                         <div className='flex items-center gap-2'>
-                            <p className='md:text-[24px] text-[20px] instrument-sans tracking-[-0.8px] font-normal text-[#737373]'>That Vote Was a Little Too <span className='text-[#0a0a0a] instrument-serif font-normal italic'>Personal.</span>  </p>
+                            <p className='md:text-[24px] text-[20px] instrument-sans tracking-[-0.8px] font-normal text-[#737373] dark:text-white'>That Vote Was a Little Too <span className='text-[#0a0a0a] dark:text-white instrument-serif font-normal italic'>Personal.</span>  </p>
                             <Image
                                 src="/assets/mdi_flame.svg"
                                 alt="mdi_flame"
@@ -367,11 +367,11 @@ const Rank = () => {
 
                     </div>
                 )}
-                <p className='lg:text-[20px] text-[14px] instrument-sans font-normal text-[#737373] text-center'>
+                <p className='lg:text-[20px] text-[14px] instrument-sans font-normal text-[#737373] dark:text-white text-center'>
                             All images are uploaded by creators. If something looks off,{' '}
                             <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
                                 <DialogTrigger asChild>
-                                    <button className='text-[#0a0a0a] hover:underline'>
+                                    <button className='text-[#0a0a0a] dark:text-white hover:underline'>
                                         report it →
                                     </button>
                                 </DialogTrigger>
@@ -381,7 +381,7 @@ const Rank = () => {
                                     </DialogHeader>
                                     <form onSubmit={handleReportSubmit} className="space-y-4">
                                         <div>
-                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                                 Your Name
                                             </label>
                                             <Input
@@ -393,7 +393,7 @@ const Rank = () => {
                                             />
                                         </div>
                                         <div>
-                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                                 Email
                                             </label>
                                             <Input
@@ -406,7 +406,7 @@ const Rank = () => {
                                             />
                                         </div>
                                         <div>
-                                            <label htmlFor="complaint" className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label htmlFor="complaint" className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
                                                 What's the issue?
                                             </label>
                                             <Textarea

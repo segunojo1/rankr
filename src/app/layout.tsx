@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next"
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/sonner";
+import AuthRedirect from "@/components/auth/AuthRedirect";
 
 export const metadata: Metadata = {
   title: {
@@ -73,7 +74,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased instrument-sans bg-[#fafafa]`}
+        className={`antialiased instrument-sans bg-[#fafafa] dark:bg-black`}
       >
         <ThemeProvider
           attribute="class"
@@ -83,6 +84,7 @@ export default function RootLayout({
         >
 
           {children}
+          <AuthRedirect />
         </ThemeProvider>
         <Analytics />
         <NextTopLoader
