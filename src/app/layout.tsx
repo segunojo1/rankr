@@ -61,11 +61,10 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
-  },
-  manifest: '/site.webmanifest',
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  }
 };
 
 export default function RootLayout({
