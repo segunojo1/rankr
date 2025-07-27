@@ -1,4 +1,3 @@
-// src/app/user/page.tsx
 'use client';
 
 import { useTheme } from 'next-themes';

@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface TeamMemberProps {
@@ -23,6 +23,43 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
     isWinner = true,
     isOddIndex = false
 }) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cardRef.current) return;
+        
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * 5; // Reduced rotation for subtlety
+        const rotateY = ((centerX - x) / centerX) * 5;
+        
+        setMousePosition({ x: rotateX, y: rotateY });
+    };
+    
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+    
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        setMousePosition({ x: 0, y: 0 });
+    };
+    
+    const cardStyle: React.CSSProperties = {
+        transform: isHovered 
+            ? `perspective(1000px) rotateX(${mousePosition.x}deg) rotateY(${mousePosition.y}deg) scale3d(1.03, 1.03, 1.03)`
+            : 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
+        transition: 'transform 0.3s ease-out, box-shadow 0.3s ease-out',
+        transformStyle: 'preserve-3d' as const,
+        willChange: 'transform',
+    };
     const bioContent = (
         <div className='md:w-[190px] w-[71px]'>
             <div className='flex items-center md:gap-3 gap-1 p-2'>
@@ -35,16 +72,16 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
                         className='w-[13px] h-[13px] md:w-9 md:h-9'
                     />
                 )}
-                <p className='instrument-serif italic font-normal text-[#001526] text-[10px] md:text-3xl md:-tracking-wide -tracking-[0.42px]'>
+                <p className='instrument-serif italic font-normal text-[#001526] dark:text-white text-[10px] md:text-3xl md:-tracking-wide -tracking-[0.42px]'>
                     {name}
                 </p>
             </div>
 
-            <div className='w-full md:max-w-[240px] max-w-[66px] md:h-9 h-[13px] md:mb-[25px] mb-[10px] flex items-center px-[2px] border-1 md:rounded-[9px] rounded-[4px] overflow-hidden'
+            <div className='w-full md:max-w-[240px] max-w-[66px] md:h-9 h-[13px] md:mb-[25px] mb-[10px] flex items-center px-[2px] border-1 md:rounded-[9px] rounded-[4px] overflow-hidden dark:border-gray-600'
                 style={{ borderColor: barColor }}
             >
                 <div
-                    className='md:h-8 h-[9px] md:rounded-[9px] rounded-[4px] transition-all duration-500'
+                    className='md:h-8 h-[9px] md:rounded-[9px] rounded-[4px] transition-all duration-500 dark:opacity-90'
                     style={{
                         width: `${Math.floor(Math.random() * 60) + 40}%`,
                         backgroundColor: barColor,
@@ -53,10 +90,10 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
             </div>
 
             <div className='flex flex-col md:gap-2 gap-[3px]'>
-                <h2 className='text-[7.5px] md:text-xl font-medium text-[#737373] md:-tracking-wide -tracking-[0.3px] instrument-sans'>
+                <h2 className='text-[7.5px] md:text-xl font-medium text-[#737373] dark:text-gray-300 md:-tracking-wide -tracking-[0.3px] instrument-sans'>
                     {role}
                 </h2>
-                <p className='text-[5px] md:text-base font-normal text-[#737373] md:-tracking-wide -tracking-[0.2px] instrument-sans leading-relaxed'>
+                <p className='text-[5px] md:text-base font-normal text-[#737373] dark:text-gray-400 md:-tracking-wide -tracking-[0.2px] instrument-sans leading-relaxed'>
                     {description}
                 </p>
             </div>
@@ -65,7 +102,7 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
 
     const imageContent = (
         <div
-            className='md:p-2.5 p-1 bg-white rounded-xl transition-all duration-300 flex-shrink-0 w-full md:max-w-[240px] max-w-[104px] mx-auto md:mx-0'
+            className='md:p-2.5 p-1 bg-white dark:bg-gray-800 rounded-xl transition-all duration-300 flex-shrink-0 w-full md:max-w-[240px] max-w-[104px] mx-auto md:mx-0 transform-style-preserve-3d'
             style={{ border: `4.5px solid ${borderColor}` }}
         >
             <div className='relative group cursor-pointer'>
@@ -89,7 +126,14 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
     );
 
     return (
-        <div className='flex  w-fit md:flex-row items-start gap-5'>
+        <div 
+            ref={cardRef}
+            className='flex w-fit md:flex-row items-start gap-5 transition-transform duration-300 ease-out will-change-transform'
+            style={cardStyle}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             {isOddIndex ? (
                 <>
                     {imageContent}

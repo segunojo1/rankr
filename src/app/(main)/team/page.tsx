@@ -49,12 +49,12 @@ export default function Team() {
                 </Button>
             </Link>
 
-            <h1 className='text-5xl md:text-7xl instrument-sans font-medium text-center text-gray-500 -tracking-wider mb-4'>
-                <span className='instrument-serif italic text-[#001526]'>Rankr</span> was not an Accident.
+            <h1 className='text-5xl md:text-7xl instrument-sans font-medium text-center text-gray-500 dark:text-gray-300 -tracking-wider mb-4'>
+                <span className='instrument-serif italic text-[#001526] dark:text-white'>Rankr</span> was not an Accident.
             </h1>
 
-            <p className='text-xl md:text-2xl font-medium instrument-sans text-center mb-16 text-[#737373] -tracking-wide'>
-                Ranked Ourselves First (<span className='instrument-serif italic text-[#001526]'>Sorry</span>).
+            <p className='text-xl md:text-2xl font-medium instrument-sans text-center mb-16 text-[#737373] dark:text-gray-300 -tracking-wide'>
+                Ranked Ourselves First (<span className='instrument-serif italic text-[#001526] dark:text-white'>Sorry</span>).
             </p>
 
             <div className='flex flex-col md:flex-row md:flex-wrap items-center gap-4 md:gap-20 max-w-[393px] md:max-w-full md:w-full justify-center mx-auto'>

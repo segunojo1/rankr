@@ -1,4 +1,3 @@
-// src/components/user/user-form.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -8,6 +7,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useRankStore } from '@/store/rank.store';
 import { RankrService } from '@/services/rankr.service';
+import Cookies from 'js-cookie';
 
 export default function UserForm() {
   const router = useRouter();
@@ -30,13 +30,21 @@ export default function UserForm() {
         user_image: profileImage || undefined
       });
       
-      // Store user data in localStorage
+      // Store user data in cookies
       if (response && response.token) {
-        localStorage.setItem('user', JSON.stringify({
+        const userData = {
           token: response.token,
           username: username,
           timestamp: new Date().toISOString()
-        }));
+        };
+        
+        // Set cookie to expire in 30 days
+        Cookies.set('user', JSON.stringify(userData), { 
+          expires: 30,
+          sameSite: 'strict',
+          secure: process.env.NODE_ENV === 'production',
+          path: '/'
+        });
       }
       
       router.push('/welcome');

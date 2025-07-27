@@ -246,12 +246,12 @@ const router = useRouter();
                 <div className='min-w-full h-[1px] bg-[#D4D4D4] mt-[20px] mb-[10px]'></div>
                 <Button 
                     onClick={handleShare}
-                    className={`w-[341px] h-[45px] bg-[#fff] hover:text-white text-[#001526] dark:text-white border border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center ${isCopied ? 'bg-green-50' : ''}`}
+                    className={`w-[341px] h-[45px] bg-[#fff] hover:text-white text-[#001526] border border-[#001526] rounded-[5px] mb-[50px] flex items-center justify-center ${isCopied ? 'bg-green-50' : ''}`}
                     disabled={isCopied}
                 >
                     {isCopied ? 'Copied!' : 'Share'}
                 </Button>
-                <Link href='/team' className=' text-[#737373] dark:text-white text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A]'>team</span> →</Link>
+                <Link href='/team' className=' text-[#737373] dark:text-white text-[20px] -leading-[0.8px] instrument-sans font-medium' >Meet the <span className=' instrument-serif text-[#0A0A0A] dark:text-white'>team</span> →</Link>
             </div>
             
             {/* Comments Section */}
@@ -270,7 +270,7 @@ const router = useRouter();
                     <div className='flex justify-end mt-2'>
                         <Button 
                             type='submit' 
-                            className='bg-[#001526] hover:bg-[#001526]/90'
+                            className='bg-[#001526] dark:bg-white dark:hover:bg-white hover:bg-[#001526]/90'
                             disabled={!comment.trim() || isSubmittingComment}
                         >
                             {isSubmittingComment ? 'Posting...' : 'Post Comment'}
@@ -288,14 +288,14 @@ const router = useRouter();
                                 </div>
                             </div>
                             <div className='flex-1 min-w-0'>
-                                <div className='bg-[#F9F9F9] rounded-lg'>
+                                <div className='rounded-lg'>
                                     <div className='flex items-center gap-2 mb-1'>
                                         <span className='text-sm font-medium text-[#001526] dark:text-white'>Anonymous</span>
                                         <span className='text-xs text-[#737373] dark:text-white'>
                                             {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) : 'Just now'}
                                         </span>
                                     </div>
-                                    <p className='text-[#0A0A0A] whitespace-pre-wrap break-words'>{comment.comment}</p>
+                                    <p className='text-[#0A0A0A] dark:text-white whitespace-pre-wrap break-words'>{comment.comment}</p>
                                 </div>
                             </div>
                         </div>

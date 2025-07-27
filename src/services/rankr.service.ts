@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie';
 
 export interface SignupData {
   username: string;
@@ -80,17 +81,15 @@ export class RankrService {
     is_public: boolean;
   }) {
     try {
-      // Get token from localStorage
+      // Get token from cookies
       let token = '';
-      if (typeof window !== 'undefined') {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-          try {
-            const parsedData = JSON.parse(userData);
-            token = parsedData.token || '';
-          } catch (error) {
-            console.error('Error parsing user data:', error);
-          }
+      const userData = Cookies.get('user');
+      if (userData) {
+        try {
+          const parsedData = JSON.parse(userData);
+          token = parsedData.token || '';
+        } catch (error) {
+          console.error('Error parsing user data:', error);
         }
       }
 
