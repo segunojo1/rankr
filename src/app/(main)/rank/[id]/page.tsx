@@ -1,21 +1,18 @@
 'use client';
 
 import { RankrService } from '@/services/rankr.service';
-import { HeartIcon } from 'lucide-react';
-import { AxiosError } from 'axios';
-import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useRankStore } from '@/store/rank.store';
-import Link from 'next/link';
-import dynamic from 'next/dynamic';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { useParams, usePathname, useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import dynamic from 'next/dynamic';
+import { HeartIcon } from 'lucide-react';
+import Image from 'next/image';
+import { AxiosError } from 'axios';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { formatDistanceToNow } from 'date-fns';
 
 // Dynamically import ReactConfetti to avoid SSR issues
 const ReactConfetti = dynamic(() => import('react-confetti'), {
@@ -42,13 +39,7 @@ const Rank = () => {
         complaint: ''
     });
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
-    const [comment, setComment] = useState('');
-    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-    const [comments, setComments] = useState<Array<{
-        id: string;
-        comment: string;
-        createdAt: string;
-    }>>([]);
+
     const {
         currentRank,
         isLoading,
@@ -121,25 +112,9 @@ const Rank = () => {
             }
         }
 
-            // Fetch rank data and comments
-        const fetchData = async () => {
-            try {
-                await fetchRank(rankId);
-                if (rankId) {
-                    const response = await RankrService.getInstance().getComments(rankId);
-                    if (response && response.comments) {
-                        setComments(response.comments);
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                toast.error('Failed to load comments');
-            }
-        };
-
-        // Only fetch data on client side to prevent hydration issues
-        if (typeof window !== 'undefined') {
-            fetchData();
+            // Fetch rank data
+        if (rankId) {
+            fetchRank(rankId);
         }
 
         // Cleanup function
@@ -148,31 +123,6 @@ const Rank = () => {
             window.removeEventListener('resize', updateWindowSize);
         };
     }, [id, fetchRank, setCurrentRank]);
-
-    const handleCommentSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!comment.trim() || !rankId) return;
-
-        try {
-            setIsSubmittingComment(true);
-            const response = await RankrService.getInstance().postComment(rankId, comment);
-            
-            // Update the comments list with the new comment from the response
-            setComments(prevComments => [{
-                id: response.comment.id,
-                comment: response.comment.comment,
-                createdAt: response.comment.createdAt
-            }, ...prevComments]);
-            
-            setComment('');
-            toast.success('Comment added!');
-        } catch (error) {
-            console.error('Error posting comment:', error);
-            toast.error('Failed to post comment. Please try again.');
-        } finally {
-            setIsSubmittingComment(false);
-        }
-    };
 
     const handleReportSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -486,57 +436,10 @@ const Rank = () => {
                             </Dialog>
                         </p>
 
-                {/* Comments Section */}
-                <div className='mt-12 w-full max-w-3xl mx-auto'>
-                    <h3 className='text-xl font-medium text-[#001526] mb-6'>Comments ({comments.length})</h3>
-                    
-                    {/* Comment Form */}
-                    <form onSubmit={handleCommentSubmit} className='mb-8'>
-                        <Textarea
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            placeholder='Add an anonymous comment...'
-                            className='min-h-[100px] resize-none border-[#D4D4D4] focus-visible:ring-1 focus-visible:ring-[#001526] w-full'
-                            disabled={isSubmittingComment}
-                        />
-                        <div className='flex justify-end mt-2'>
-                            <Button 
-                                type='submit' 
-                                className='bg-[#001526] hover:bg-[#001526]/90'
-                                disabled={!comment.trim() || isSubmittingComment}
-                            >
-                                {isSubmittingComment ? 'Posting...' : 'Post Comment'}
-                            </Button>
-                        </div>
-                    </form>
-
-                    {/* Comments List */}
-                    <div className='space-y-4'>
-                        {comments.map((comment) => (
-                            <div key={comment.id} className='flex gap-3'>
-                                <div className='flex-shrink-0'>
-                                    <div className='h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm font-medium'>
-                                        A
-                                    </div>
-                                </div>
-                                <div className='flex-1 min-w-0'>
-                                    <div className='bg-[#F9F9F9] rounded-lg '>
-                                        <div className='flex items-center gap-2 mb-1'>
-                                            <span className='text-sm font-medium text-[#001526]'>Anonymous</span>
-                                            <span className='text-xs text-[#737373]'>
-                                                {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) : 'Just now'}
-                                            </span>
-                                        </div>
-                                        <p className='text-[#0A0A0A] whitespace-pre-wrap break-words'>{comment.comment}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        
-                        {comments.length === 0 && (
-                            <p className='text-center text-[#737373] py-8'>No comments yet. Be the first to comment!</p>
-                        )}
-                    </div>
+                <div className='mt-8 text-center'>
+                    <p className='text-sm text-gray-500'>
+                        View results and comments on the leaderboard after voting
+                    </p>
                 </div>
             </div>
         </div>

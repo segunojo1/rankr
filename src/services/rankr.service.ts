@@ -146,10 +146,10 @@ export class RankrService {
     }
   }
 
-  public async reportRankr(rankId: string, reportData: { name: string; email: string; complaint: string }) {
+  public async reportRankr(rankrId: string, reportData: { name: string; email: string; complaint: string }) {
     try {
-      const response = await this.api.post(`report`, {
-        rankId,
+      const response = await this.api.post(`/rankr/report`, {
+        rankrId,
         ...reportData
       });
       return response.data;
