@@ -328,7 +328,7 @@ const Rank = () => {
                         toast.success('Link copied to clipboard!');
                         setTimeout(() => setIsCopied(false), 2000);
                     }}
-                    className={`p-2 rounded-full transition-colors ${isCopied ? 'bg-green-100' : 'hover:bg-gray-100'}`}
+                    className={`p-2 rounded-full transition-colors dark:bg-white ${isCopied ? 'bg-green-100 ' : 'hover:bg-gray-100'}`}
                     title="Copy link to share"
                 >
                     <Image
@@ -336,7 +336,7 @@ const Rank = () => {
                         alt="share"
                         width={30}
                         height={30}
-                        className={`w-[30px] h-[30px] ${isCopied ? 'opacity-70' : ''}`}
+                        className={`w-[30px] h-[30px]  ${isCopied ? 'opacity-70' : ''}`}
                     />
                 </button>
 
