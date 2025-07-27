@@ -1,64 +1,51 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { RankrService } from '@/services/rankr.service';
 
-interface RankLayoutProps {
-  children: React.ReactNode;
-  params: { id: string };
-}
+// Client component for the layout
+export default function RankLayout({ children }: { children: React.ReactNode }) {
+  const params = useParams();
+  const [metadata, setMetadata] = useState<{
+    title: string;
+    description: string;
+  }>({
+    title: 'Loading... | Rankr',
+    description: 'Loading rank information...',
+  });
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  try {
-    const response = await RankrService.getInstance().getRankr(params.id);
-    const rank = response.rankr;
-    
-    if (!rank) {
-      return {
-        title: 'Rank Not Found | Rankr',
-        description: 'The requested rank could not be found.',
-      };
+  useEffect(() => {
+    const fetchRankData = async () => {
+      try {
+        const response = await RankrService.getInstance().getRankr(params.id as string);
+        const rank = response.rankr;
+
+        if (rank) {
+          setMetadata({
+            title: `${rank.title} | Rankr`,
+            description: `Vote for your favorite: ${rank.person_one_name} vs ${rank.person_two_name}`,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching rank data:', error);
+        setMetadata({
+          title: 'Rank Not Found | Rankr',
+          description: 'The requested rank could not be found.',
+        });
+      }
+    };
+
+    if (params?.id) {
+      fetchRankData();
     }
+  }, [params?.id]);
 
-    const title = `${rank.title} | Rankr`;
-    const description = `Vote for your favorite: ${rank.person_one_name} vs ${rank.person_two_name}`;
-    const imageUrl = rank.person_one_image_url || rank.person_two_image_url || '/assets/logo.png';
-
-    return {
-      title,
-      description,
-      openGraph: {
-        title,
-        description,
-        images: [
-          {
-            url: imageUrl,
-            width: 1200,
-            height: 630,
-            alt: `${rank.person_one_name} vs ${rank.person_two_name}`,
-          },
-        ],
-        type: 'website',
-        siteName: 'Rankr',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: [imageUrl],
-      },
-    };
-  } catch (error) {
-    console.error('Error generating metadata for rank:', error);
-    return {
-      title: 'Rank | Rankr',
-      description: 'Vote for your favorite on Rankr',
-    };
-  }
-}
-
-export default function RankLayout({ children }: RankLayoutProps) {
-  return (
-    <>
-      {children}
-    </>
-  );
+  // Update the document title
+  useEffect(() => {
+    if (metadata.title) {
+      document.title = metadata.title;
+    }
+  }, [metadata.title]);
+  return <>{children}</>;
 }
