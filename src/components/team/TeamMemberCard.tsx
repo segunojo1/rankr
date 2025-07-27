@@ -37,8 +37,9 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        const rotateX = ((y - centerY) / centerY) * 5; // Reduced rotation for subtlety
-        const rotateY = ((centerX - x) / centerX) * 5;
+        // Increased rotation multipliers for more pronounced effect
+        const rotateX = ((y - centerY) / centerY) * 12; // Increased from 5 to 12
+        const rotateY = ((centerX - x) / centerX) * 12; // Increased from 5 to 12
         
         setMousePosition({ x: rotateX, y: rotateY });
     };
@@ -54,11 +55,11 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
     
     const cardStyle: React.CSSProperties = {
         transform: isHovered 
-            ? `perspective(1000px) rotateX(${mousePosition.x}deg) rotateY(${mousePosition.y}deg) scale3d(1.03, 1.03, 1.03)`
+            ? `perspective(1000px) rotateX(${mousePosition.x}deg) rotateY(${mousePosition.y}deg) scale3d(1.05, 1.05, 1.05)`
             : 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-        transition: 'transform 0.3s ease-out, box-shadow 0.3s ease-out',
+        transition: 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease-out',
         transformStyle: 'preserve-3d' as const,
-        willChange: 'transform',
+        willChange: 'transform'
     };
     const bioContent = (
         <div className='md:w-[190px] w-[71px]'>
@@ -128,7 +129,7 @@ export const TeamMemberCard: React.FC<TeamMemberProps> = ({
     return (
         <div 
             ref={cardRef}
-            className='flex w-fit md:flex-row items-start gap-5 transition-transform duration-300 ease-out will-change-transform'
+            className='flex w-fit md:flex-row items-start gap-5 will-change-transform relative z-10'
             style={cardStyle}
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
