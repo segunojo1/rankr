@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Image from "next/image";
 import { ThemeProvider } from "@/components/theme-provider";
-import ThemeSwitcher from "@/components/ui/theme-switcher";
+import { Analytics } from "@vercel/analytics/next"
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -86,6 +84,7 @@ export default function RootLayout({
 
           {children}
         </ThemeProvider>
+        <Analytics />
         <NextTopLoader
           color="#000000" />
           <Toaster />
