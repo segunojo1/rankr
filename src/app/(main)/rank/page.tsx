@@ -303,6 +303,7 @@ const Step2 = () => {
               onRemove={handleRemoveOption}
               showAddMore={index === formData.options.length - 1 && formData.options.length < 10}
               onAdd={handleAddOption}
+              key={option.id}
             />
           ))}
           {/* <Button onClick={handleAddOption}
