@@ -81,7 +81,7 @@ const initialState: RankFormData = {
     isPublic: true,
     allowComments: true,
     multipleVotes: false,
-    duration: '1',
+    duration: '1h',
   },
 };
 

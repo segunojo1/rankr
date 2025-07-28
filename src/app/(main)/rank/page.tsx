@@ -403,7 +403,7 @@ const Step3 = () => {
         <div className="space-y-2 w-full">
           <label className="block text-sm font-medium text-[#191919] dark:text-white mb-1">Voting Duration</label>
           <Select
-            value="1h"
+            value={formData.settings.duration}
             onValueChange={(value) => handleDurationChange({ target: { value } } as any)}
           >
             <SelectTrigger className="w-full">
