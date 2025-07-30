@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next"
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/sonner";
@@ -75,14 +74,7 @@ export default function RootLayout({
       <body
         className={`antialiased instrument-sans bg-[#fafafa] dark:bg-black`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          disableTransitionOnChange
-        >
-
           {children}
-        </ThemeProvider>
         <Analytics />
         <NextTopLoader
           color="#000000" />
